@@ -1,0 +1,176 @@
+@model IEnumerable<Product>
+
+<div class="row">
+    <div class="col-12">
+        <h2>Product List</h2>
+        <a class="btn btn-primary" asp-action="Create">New Product</a>
+        <form method="get" action="FilterProducts" class="mb-3">
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="categoryId" class="form-label">Category:</label>
+                    <select id="categoryId" name="categoryId" class="form-control">
+                        <option value="">All Categories</option>
+                        @foreach (var category in ViewBag.Categories)
+                        {
+                            <option value="@category.CategoryId">@category.CategoryName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="seasonId" class="form-label">Season:</label>
+                    <select id="seasonId" name="seasonId" class="form-control">
+                        <option value="">All Seasons</option>
+                        @foreach (var season in ViewBag.Seasons)
+                        {
+                            <option value="@season.SeasonId">@season.SeasonName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="brandId" class="form-label">Brand:</label>
+                    <select id="brandId" name="brandId" class="form-control">
+                        <option value="">All Brands</option>
+                        @foreach (var brand in ViewBag.Brands)
+                        {
+                            <option value="@brand.BrandId">@brand.BrandName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="genderId" class="form-label">Gender:</label>
+                    <select id="genderId" name="genderId" class="form-control">
+                        <option value="">All Brands</option>
+                        @foreach (var gender in ViewBag.Genders)
+                        {
+                            <option value="@gender.GenderId">@gender.GenderName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Apply Filters</button>
+        </form>
+
+
+        <form method="get" action="FilterProductsCheckbox" class="mb-3">
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label">Category:</label>
+                    @foreach (var category in ViewBag.Categories)
+                    {
+                        <div class="form-check">
+                            <input type="checkbox" id="category_@category.CategoryId" name="categoryIds" value="@category.CategoryId" class="form-check-input">
+                            <label for="category_@category.CategoryId" class="form-check-label">@category.CategoryName</label>
+                        </div>
+                    }
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Season:</label>
+                    @foreach (var season in ViewBag.Seasons)
+                    {
+                        <div class="form-check">
+                            <input type="checkbox" id="season_@season.SeasonId" name="seasonIds" value="@season.SeasonId" class="form-check-input">
+                            <label for="season_@season.SeasonId" class="form-check-label">@season.SeasonName</label>
+                        </div>
+                    }
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Brand:</label>
+                    @foreach (var brand in ViewBag.Brands)
+                    {
+                        <div class="form-check">
+                            <input type="checkbox" id="brand_@brand.BrandId" name="brandIds" value="@brand.BrandId" class="form-check-input">
+                            <label for="brand_@brand.BrandId" class="form-check-label">@brand.BrandName</label>
+                        </div>
+                    }
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Apply Filters</button>
+        </form>
+        
+        @if(Model != null && Model.Any()) {
+            <table class="table tabled-bordered mt-3">
+            <thead>
+                <tr>
+                    <th style="width: 200px;">Image</th>
+                    <th>Name</th>
+                    <th>Variants</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                    <th>Season</th>
+                    <th>Brand</th>
+                    <th>Gender</th>
+                    <th style="width: 125px;">Options</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+            
+                @foreach(var item in Model)
+                {
+                <tr>
+                    <td>
+                        @if (item.Variants[0].Pictures != null && item.Variants[0].Pictures.Any())
+                        {
+                            <img src="/@item.Variants[0].Pictures.First().Path" class="img-fluid" alt="">
+                        }
+                        else
+                        {
+                            <p>No Image</p>
+                        }
+                    </td>
+                    <td>@item.ProductName</td>
+                    <td>     
+                        <p>@item?.Variants?.Count()</p>
+                        @if(item?.Variants?.Count() > 0) {
+                            <a asp-controller="Variant" asp-action="List" class="btn btn-sm btn-primary">See Them</a>
+                        }
+                    </td>
+                    <td>
+                        @{
+                        var Prices = item.Variants
+                            .Where(v => v.Price != null)
+                            .Select(v => v.Price);
+
+                        if (Prices.Any())
+                        {
+                            var maxPrice = Prices.Max();
+                            var minPrice = Prices.Min();
+                            var averagePrice = Prices.Average();
+
+                            <p>Max priced variant: @maxPrice TL</p>
+                            <p>Min priced variant: @minPrice TL</p>
+                            <p>Average price of variants: @averagePrice TL</p>
+                        }
+                    }
+                    </td>
+                    
+                    <td>
+                        @(item?.Category?.CategoryName != null ? item.Category.CategoryName : "No Category")
+                    </td>
+                    <td>
+                        @(item?.Season?.SeasonName != null ? item.Season.SeasonName : "No Category")
+                    </td>
+                    <td>
+                        @(item?.Brand?.BrandName != null ? item.Brand.BrandName : "No Category")
+                    </td>
+                    <td>
+                        @(item?.Gender?.GenderName != null ? item.Gender.GenderName : "No Gender")
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item?.ProductId" class="btn btn-sm btn-primary">Edit</a>
+                        <form asp-action="Delete" method="post" onsubmit="return confirm('Are you sure?')" style="display: inline-block;">
+                            <input type="hidden" name="id" value="@item?.ProductId">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                }
+            </tbody>
+            </table>
+        } else {
+            <p>No Product</p>
+        }
+        
+    </div>
+</div>
+

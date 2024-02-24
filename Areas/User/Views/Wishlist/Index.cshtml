@@ -1,0 +1,68 @@
+@model IEnumerable<WishlistItem>
+
+<h2>Wishlist</h2>
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr id="wishlistItem-@item.ProductId">
+                    <td>@item.Product.ProductName</td>
+                    <td>
+                        <button class="btn btn-outline-danger btn-sm" onclick="removeFromWishlist(@item.ProductId)">Remove from Wishlist</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Your wishlist is empty.</p>
+}
+
+
+
+@section scripts {
+    <script>
+        async function removeFromWishlist(productId) {
+            // Update the URL with the correct path including the area
+            await fetch('@Url.Action("RemoveFromWishlist", "Wishlist", new { area = "User" })?productId=' + productId, { method: 'POST' });
+
+            // After removing, update the wishlist count and remove the item from the view
+            updateWishlistCount();
+            removeWishlistItem(productId);
+        }
+
+        function removeWishlistItem(productId) {
+            // Remove the item from the view dynamically
+            const wishlistItemElement = document.getElementById('wishlistItem-' + productId);
+            if (wishlistItemElement) {
+                wishlistItemElement.remove();
+            }
+        }
+
+        function updateWishlistCount() {
+            // Update the URL with the correct path including the area
+            fetch('@Url.Action("GetWishlistItemCount", "Wishlist", new { area = "User" })')
+                .then(response => response.json())
+                .then(count => {
+                    document.getElementById('wishlistCount').innerText = count;
+                });
+        }
+
+        function addToCart(productId) {
+            // You can implement the logic to add to the cart here (e.g., send an AJAX request).
+            alert('Added to Cart: ' + productId);
+        }
+
+    </script>
+}

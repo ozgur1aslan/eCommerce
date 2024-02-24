@@ -1,0 +1,19 @@
+@model Tag
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="bg-white p-4">
+            <h1>Create Tag</h1>
+            <form asp-action="Create" method="post">
+                <div class="text-danger"></div>
+                <div class="mb-3">
+                    <label asp-for="Text" class="form-label"></label>
+                    <input asp-for="Text" class="form-control">
+                    <span asp-validation-for="Text" class="text-danger"></span>
+                </div>                
+                <button type="submit" class="btn btn-primary">Create</button>
+            </form>
+        </div>
+    </div>
+</div>

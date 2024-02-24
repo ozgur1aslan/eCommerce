@@ -1,0 +1,19 @@
+@model Brand
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="bg-white p-4">
+            <h1>Update Brand</h1>
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="BrandId">
+                <div class="mb-3">
+                    <label asp-for="BrandName" class="form-label"></label>
+                    <input asp-for="BrandName" class="form-control">
+                    <span asp-validation-for="BrandName" class="text-danger"></span>
+                </div>                
+                <button type="submit" class="btn btn-primary">Update</button>
+            </form>
+        </div>
+    </div>
+</div>

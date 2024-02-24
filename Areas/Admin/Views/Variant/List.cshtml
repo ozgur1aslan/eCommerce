@@ -1,0 +1,104 @@
+@model IEnumerable<Variant>
+
+<div class="row">
+    <div class="col-12">
+        <h2>Variant List</h2>
+        <a class="btn btn-primary" asp-action="Create" asp-route-id="@Model.First().ProductId">New Variant</a>
+                
+        @if(Model != null && Model.Any()) {
+            <table class="table tabled-bordered mt-3">
+            <thead>
+                <tr>
+                    <th style="width: 200px;">Image</th>
+                    <th>Specifications</th>
+                    <th>Price</th>
+                    <th>Discounted Price</th>
+                    <th>Category</th>
+                    <th>Season</th>
+                    <th>Brand</th>
+                    <th>Gender</th>
+                    <th>Variants</th>
+                    <th style="width: 125px;">Options</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+            
+                @foreach(var item in Model)
+                {
+                <tr>
+                    <td>
+                        @if (item.Pictures != null && item.Pictures.Any())
+                        {
+                            <img src="/@item.Pictures.First().Path" class="img-fluid" alt="">
+                        }
+                        else
+                        {
+                            <p>No Image</p>
+                        }
+                    </td>
+                    @if(item.Values != null) {
+                        <td>
+                            @foreach(var val in item.Values){
+                                
+                                <p>
+                                    @val.Option.OptionName : @val.ValueText
+                                </p>
+                                
+                            }
+                        </td>
+
+                    } else {
+                        <td>
+                            No Spec                                
+                        </td>
+                    }
+                    <td>@item.Price TL</td>
+                    @if(item.DiscountedPrice != null) {
+                        <td>@item.DiscountedPrice TL</td>
+                    } else {
+                        <td>
+                            Not Discounted
+                            <form action="ApplyDiscount" method="post">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <div class="mb-3" style="width: 100px">
+                                    <label asp-route-id="DiscountedPrice" class="form-label"></label>
+                                    <input type="number" asp-route-id="DiscountedPrice" class="form-control">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Create</button>
+                            </form>
+                        </td>
+                    }
+                    <td>
+                        @(item?.Product.Category?.CategoryName != null ? item.Product.Category.CategoryName : "No Category")
+                    </td>
+                    <td>
+                        @(item?.Product.Season?.SeasonName != null ? item.Product.Season.SeasonName : "No Category")
+                    </td>
+                    <td>
+                        @(item?.Product.Brand?.BrandName != null ? item.Product.Brand.BrandName : "No Category")
+                    </td>
+                    <td>
+                        @(item?.Product.Gender?.GenderName != null ? item.Product.Gender.GenderName : "No Gender")
+                    </td>
+                    <td>
+
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item?.ProductId" class="btn btn-sm btn-primary">Edit</a>
+                        <form asp-action="Delete" method="post" onsubmit="return confirm('Are you sure?')" style="display: inline-block;">
+                            <input type="hidden" name="id" value="@item?.ProductId">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                }
+            </tbody>
+            </table>
+        } else {
+            <p>No Product</p>
+        }
+        
+    </div>
+</div>
+

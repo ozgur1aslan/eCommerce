@@ -1,0 +1,27 @@
+.admin-menu-card {
+    width: 400px;
+    height: 200px;
+    background-color: #c45454;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    border: 1px solid #ccc;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.admin-menu-a-tag {
+    text-decoration: none; /* Remove underline */
+}
+
+.admin-menu-a-tag :hover {
+    transform: scale(1.05);
+  }
+
+.admin-menu-card p {
+    font-style: italic; /* Make text italic */
+    font-size: 50px; /* Adjust the font size as needed */
+    color: #000000;
+    
+}

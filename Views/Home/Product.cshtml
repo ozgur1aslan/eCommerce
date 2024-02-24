@@ -1,0 +1,92 @@
+@model eCommerce.Models.Product
+@inject eCommerce.Services.WishlistService WishlistService
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <img src="/img/2.jpg" class="img-fluid" alt="@Model.ProductName">
+        </div>
+        <div class="col-md-6">
+            <h2>@Model.ProductName</h2>
+            
+            @if (Model.Category != null)
+            {
+                <p class="text-muted">Category: @Model.Category.CategoryName</p>
+            }
+
+            @if (Model.Brand != null)
+            {
+                <p class="text-muted">Brand: @Model.Brand.BrandName</p>
+            }
+
+            <p class="lead">Price: @Model.Variants[0].Price TL</p>
+
+            @if (Model.Variants[0].DiscountedPrice != null)
+            {
+                <p class="lead text-danger">Discounted Price: @Model.Variants[0].DiscountedPrice TL</p>
+            }
+
+            <div>
+                <button class="btn btn-outline-danger" onclick="toggleWishlist(@Model.ProductId)">
+                    <i id="wishlistIcon_@Model.ProductId" class="heart-icon @if (WishlistService.IsInWishlist(Model.ProductId)) { <text>fas text-danger</text> } else { <text>far text-danger</text> } fa-heart"></i>
+                    Add to Wishlist
+                </button>
+                <button class="btn btn-primary ms-2" onclick="addToCart(@Model.ProductId)">
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <h4>Description</h4>
+        <!-- Add your product description here -->
+    </div>
+
+    <div class="mt-4">
+        <h4>Tags</h4>
+        <ul class="list-inline">
+            @foreach (var tag in Model.Tags)
+            {
+                <li class="list-inline-item"><span class="badge bg-secondary">@tag.Text</span></li>
+            }
+        </ul>
+    </div>
+</div>
+
+
+@section scripts {
+    <script>
+        async function toggleWishlist(productId) {
+            // Update the URL with the correct path including the area
+            await fetch('@Url.Action("ToggleWishlist", "Wishlist", new { area = "User" })?productId=' + productId, { method: 'POST' });
+
+            // After toggling, update the heart icon and the count in the navbar
+            updateWishlistIcon(productId);
+            updateWishlistCount();
+        }
+
+        function updateWishlistIcon(productId) {
+            const icon = document.getElementById(`wishlistIcon_${productId}`);
+            icon.classList.toggle('far'); // Toggle unfilled heart
+            icon.classList.toggle('fas'); // Toggle filled heart
+        }
+
+        function updateWishlistCount() {
+            // Update the URL with the correct path including the area
+            fetch('@Url.Action("GetWishlistItemCount", "Wishlist", new { area = "User" })')
+                .then(response => response.json())
+                .then(count => {
+                    document.getElementById('wishlistCount').innerText = count;
+                });
+        }
+
+        function addToCart(productId) {
+            // You can implement the logic to add to the cart here (e.g., send an AJAX request).
+            alert('Added to Cart: ' + productId);
+        }
+
+        // Update the count when the page loads
+        updateWishlistCount();
+    </script>
+}

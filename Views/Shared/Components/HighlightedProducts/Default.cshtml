@@ -1,0 +1,19 @@
+@model List<Product>
+
+<div class="card mb-2">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Highlighted Products</h5>
+    </div>
+    <div class="card-body">
+        @foreach(var product in Model)
+        {
+            <div class="mb-3">
+                <h6 class="mb-0">
+                    <a href="/posts/details/1">
+                        @product.ProductName
+                    </a>
+                </h6>
+            </div>
+        }
+    </div>
+</div>

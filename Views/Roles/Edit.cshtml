@@ -1,0 +1,14 @@
+@model AppRole
+
+<h2>Edit Role</h2>
+<hr>
+<form asp-action="Edit" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input type="hidden" name="Id" value="@Model.Id">
+    <div class="mb-3">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+
+</form>

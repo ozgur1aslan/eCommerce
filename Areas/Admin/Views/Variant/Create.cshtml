@@ -1,0 +1,58 @@
+@model NewVariantCreateViewModel
+
+@{
+    int? productId = ViewBag.Id;
+}
+
+<h2>Create Variant</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    
+    <div class="mb-3">
+        <input asp-for="ProductId" value="@productId">
+    </div>
+
+    <div id="variantContainer">
+        <div class="variant-form">
+            <h4>Variant</h4>
+            <div class="form-group">
+                <label asp-for="Price">Price:</label>
+                <input asp-for="Price" class="form-control" />
+                <label asp-for="DiscountedPrice">Discounted Price:</label>
+                <input asp-for="DiscountedPrice" class="form-control" />
+                <label asp-for="Stock">Stock:</label>
+                <input asp-for="Stock" class="form-control" />
+                <label>Pictures:</label>
+                <input asp-for="Pictures" type="file" class="form-control" multiple />
+
+                <div class="option-group">
+                    @{
+                        var options = ViewBag.Options;
+                        if (options != null)
+                        {
+                            for (int i = 0; i < options.Count; i++)
+                            {
+                                <div class="option-group">
+                                    <label>@options[i].OptionName:</label>
+                                    
+                                    <select asp-for="Values[i].ValueId" class="form-control">
+                                        <option value="">Select...</option>
+                                        @{
+                                            var values = options[i].Values;
+                                            foreach (var value in values)
+                                            {
+                                                <option value="@value.ValueId">@value.ValueText</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success">Create Variant</button>
+</form>
+

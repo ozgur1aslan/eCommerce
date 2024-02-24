@@ -1,0 +1,117 @@
+@model ProductCreateViewModel
+
+<h2>Create Product</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label asp-for="ProductName">Product Name:</label>
+        <input asp-for="ProductName" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="GenderId" class="form-label">Gender</label>
+        <select asp-for="GenderId" asp-items="ViewBag.Genders" class="form-select">
+            <option value="">
+                Choose
+            </option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="CategoryId" class="form-label">Category</label>
+        <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select">
+            <option value="">
+                Choose
+            </option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="SeasonId" class="form-label">Season</label>
+        <select asp-for="SeasonId" asp-items="ViewBag.Seasons" class="form-select">
+            <option value="">
+                Choose
+            </option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="BrandId" class="form-label">Brand</label>
+        <select asp-for="BrandId" asp-items="ViewBag.Brands" class="form-select">
+            <option value="">
+                Choose
+            </option>
+        </select>
+    </div>
+
+    <div id="variantContainer">
+        <div class="variant-form">
+            <h4>Variant 1</h4>
+            <div class="form-group">
+                <label asp-for="Variants[0].Price">Price:</label>
+                <input asp-for="Variants[0].Price" class="form-control" />
+                <label asp-for="Variants[0].DiscountedPrice">Discounted Price:</label>
+                <input asp-for="Variants[0].DiscountedPrice" class="form-control" />
+                <label asp-for="Variants[0].Stock">Stock:</label>
+                <input asp-for="Variants[0].Stock" class="form-control" />
+                <label>Pictures:</label>
+                <input asp-for="Variants[0].Pictures" type="file" class="form-control" multiple />
+
+                <div class="option-group">
+                    @{
+                        var options = ViewBag.Options;
+                        if (options != null)
+                        {
+                            for (int i = 0; i < options.Count; i++)
+                            {
+                                <div class="option-group">
+                                    <label>@options[i].OptionName:</label>
+                                    
+                                    <select asp-for="Variants[0].Values[i].ValueId" class="form-control">
+                                        <option value="">Select...</option>
+                                        @{
+                                            var values = options[i].Values;
+                                            foreach (var value in values)
+                                            {
+                                                <option value="@value.ValueId">@value.ValueText</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-primary" onclick="addVariant()">Add Variant</button>
+    <button type="submit" class="btn btn-success">Create Product</button>
+</form>
+
+@section scripts {
+    <script>
+        let variantCount = 1;
+
+        function addVariant() {
+            const container = document.getElementById('variantContainer');
+
+            const firstVariant = document.querySelector('.variant-form');
+            const newVariant = firstVariant.cloneNode(true);
+
+            // Update the variant number in the heading
+            newVariant.querySelector('h4').textContent = `Variant ${variantCount + 1}`;
+
+            // Clear values and update names in the new variant
+            newVariant.querySelectorAll('input, select').forEach((element) => {
+                // Update the name attribute to make it unique
+                const currentName = element.getAttribute('name');
+                const newName = currentName.replace('[0]', `[${variantCount}]`);
+                element.setAttribute('name', newName);
+                element.value = '';
+            });
+
+            // Append the new variant to the container
+            container.appendChild(newVariant);
+
+            variantCount++;
+        }
+    </script>
+}
