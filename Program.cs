@@ -58,6 +58,7 @@ builder.Services.AddScoped<ITagRepository, EfTagRepository>();
 
 builder.Services.AddScoped<IWishlistRepository, EfWishlistRepository>();
 builder.Services.AddScoped<ICartRepository, EfCartRepository>();
+builder.Services.AddScoped<IOrderRepository, EfOrderRepository>();
 
 
 builder.Services.AddScoped<EmailService>();

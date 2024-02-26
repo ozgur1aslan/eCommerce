@@ -20,6 +20,8 @@ namespace eCommerce.Data.Concrete.EfCore
 
         public DbSet<WishlistItem> WishlistItems { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<PurchasedItem> PurchasedItems { get; set; }
 
 
         public DbSet<Product> Products => Set<Product>();
