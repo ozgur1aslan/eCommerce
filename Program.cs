@@ -55,15 +55,16 @@ builder.Services.AddScoped<ICategoryRepository, EfCategoryRepository>();
 builder.Services.AddScoped<ISeasonRepository, EfSeasonRepository>();
 builder.Services.AddScoped<IBrandRepository, EfBrandRepository>();
 builder.Services.AddScoped<ITagRepository, EfTagRepository>();
+
 builder.Services.AddScoped<IWishlistRepository, EfWishlistRepository>();
-
-
+builder.Services.AddScoped<ICartRepository, EfCartRepository>();
 
 
 builder.Services.AddScoped<EmailService>();
 
 // Add WishlistService registration
 builder.Services.AddScoped<WishlistService>();
+builder.Services.AddScoped<CartService>();
 
 var app = builder.Build();
 

@@ -24,7 +24,14 @@ namespace eCommerce.Areas.User.Controllers
         public IActionResult Index()
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            var wishlistItems = _wishlistRepository.WishlistItems.Include(i=>i.Product).Where(item => item.UserId == userId).ToList();
+            var wishlistItems = _wishlistRepository.WishlistItems
+            .Include(i=>i.Variant)
+                .ThenInclude(i=>i.Product)
+            .Include(i=>i.Variant)
+                .ThenInclude(i=>i.Pictures)
+            .Include(i=>i.Variant)
+                .ThenInclude(i=>i.Values)
+            .Where(item => item.UserId == userId).ToList();
             return View(wishlistItems);
         }
 
@@ -40,27 +47,27 @@ namespace eCommerce.Areas.User.Controllers
 
 
         [HttpPost]
-        public IActionResult AddToWishlist(int productId)
+        public IActionResult AddToWishlist(int variantId)
         {
-            _wishlistService.AddToWishlist(productId);
+            _wishlistService.AddToWishlist(variantId);
             return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
-        public IActionResult RemoveFromWishlist(int productId)
+        public IActionResult RemoveFromWishlist(int variantId)
         {
-            _wishlistService.RemoveFromWishlist(productId);
+            _wishlistService.RemoveFromWishlist(variantId);
             return RedirectToAction("Index", "Wishlist");
         }
 
 
         [HttpPost]
-        public JsonResult ToggleWishlist(int productId)
+        public JsonResult ToggleWishlist(int variantId)
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
             // Toggle the wishlist item (remove if exists, add if not)
-            _wishlistRepository.ToggleWishlistItem(productId, userId);
+            _wishlistRepository.ToggleWishlistItem(variantId, userId);
 
             // Get the updated count
             var count = _wishlistRepository.GetWishlistItemCount(userId);

@@ -7,17 +7,56 @@
     <table class="table">
         <thead>
             <tr>
+                <th>Image</th>
                 <th>Product Name</th>
+                <th>Price</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
             {
-                <tr id="wishlistItem-@item.ProductId">
-                    <td>@item.Product.ProductName</td>
+                <tr id="wishlistItem-@item.VariantId">
                     <td>
-                        <button class="btn btn-outline-danger btn-sm" onclick="removeFromWishlist(@item.ProductId)">Remove from Wishlist</button>
+                        @if (item.Variant.Pictures != null && item.Variant.Pictures.Any())
+                        {
+                            <img src="/@item.Variant.Pictures.First().Path" class="img-fluid" width="100px">
+                        }
+                        else
+                        {
+                            <p>No Image</p>
+                        }
+                    </td>
+                    <td>
+                        <p>@item.Variant.Product.ProductName</p>
+
+                        @if(item.Variant.Values != null) {
+                            
+                            @foreach(var val in item.Variant.Values){
+                                
+                                <p>
+                                    @val.ValueText
+                                </p>
+                            }
+                        }else {
+                            <p>
+                                No Spec                                
+                            </p>
+                        }
+                        
+                    </td>
+                    @if (item.Variant.DiscountedPrice != null)
+                                {
+                                    <td>
+                                        <del>@item.Variant.Price TL</del> <span class="text-danger">@item.Variant.DiscountedPrice TL</span>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>@item.Variant.Price TL</td>
+                                }
+                    <td>
+                        <button class="btn btn-outline-danger btn-sm" onclick="removeFromWishlist(@item.VariantId)">Remove from Wishlist</button>
                     </td>
                 </tr>
             }
@@ -33,18 +72,18 @@ else
 
 @section scripts {
     <script>
-        async function removeFromWishlist(productId) {
+        async function removeFromWishlist(variantId) {
             // Update the URL with the correct path including the area
-            await fetch('@Url.Action("RemoveFromWishlist", "Wishlist", new { area = "User" })?productId=' + productId, { method: 'POST' });
+            await fetch('@Url.Action("RemoveFromWishlist", "Wishlist", new { area = "User" })?variantId=' + variantId, { method: 'POST' });
 
             // After removing, update the wishlist count and remove the item from the view
             updateWishlistCount();
-            removeWishlistItem(productId);
+            removeWishlistItem(variantId);
         }
 
-        function removeWishlistItem(productId) {
+        function removeWishlistItem(variantId) {
             // Remove the item from the view dynamically
-            const wishlistItemElement = document.getElementById('wishlistItem-' + productId);
+            const wishlistItemElement = document.getElementById('wishlistItem-' + variantId);
             if (wishlistItemElement) {
                 wishlistItemElement.remove();
             }
@@ -59,9 +98,9 @@ else
                 });
         }
 
-        function addToCart(productId) {
+        function addToCart(variantId) {
             // You can implement the logic to add to the cart here (e.g., send an AJAX request).
-            alert('Added to Cart: ' + productId);
+            alert('Added to Cart: ' + variantId);
         }
 
     </script>

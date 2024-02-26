@@ -9,7 +9,7 @@ namespace eCommerce.Data.Concrete.EfCore
 {
     public static class SeedData
     {
-        private const string adminUser = "admin";
+        private const string adminUser = "ozgur@admin.com";
         private const string adminPassword = "admin123";
 
         public static async void SeedNeededData(IApplicationBuilder app)

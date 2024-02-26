@@ -1,0 +1,199 @@
+@model IEnumerable<CartItem>
+
+<h2>Cart</h2>
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr id="cartItem-@item.VariantId">
+                    <td>
+                        @if (item.Variant.Pictures != null && item.Variant.Pictures.Any())
+                        {
+                            <img src="/@item.Variant.Pictures.First().Path" class="img-fluid" width="100px">
+                        }
+                        else
+                        {
+                            <p>No Image</p>
+                        }
+                    </td>
+                    <td>
+                        <p>@item.Variant.Product.ProductName</p>
+
+                        @if(item.Variant.Values != null) {
+                            @foreach(var val in item.Variant.Values){
+                                <p>@val.ValueText</p>
+                            }
+                        }else {
+                            <p>No Spec</p>
+                        }
+                        
+                    </td>
+                    <td>
+                        @{
+                            decimal discountedTotalPrice = item.Variant.DiscountedPrice != null ? (decimal)item.Variant.DiscountedPrice * item.Quantity : 0;
+                        }
+
+                        @if (item.Variant.DiscountedPrice != null)
+                        {
+                            <span class="text-danger">@discountedTotalPrice TL</span>
+                        }
+                        else
+                        {
+                            <span>0.00 TL</span>
+                        }
+                    </td>
+                    <td>
+                        <!-- Quantity controls -->
+                        <div class="quantity-controls">
+                            <button class="btn btn-outline-secondary btn-sm" onclick="updateQuantity(@item.VariantId, -1)">-</button>
+                            <span>@item.Quantity</span>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="updateQuantity(@item.VariantId, 1)">+</button>
+                            
+                        </div>
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-danger btn-sm" onclick="removeFromCart(@item.VariantId)">Remove from Cart</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div>
+        <p>Total Price: <span id="totalPrice">0.00 TL</span></p>
+    </div>
+    <button class="btn btn-primary" onclick="redirectToCheckout()">Proceed to Checkout</button>
+
+    @section scripts {
+    <script>
+        // Initialize total price with the current values in the cart
+        document.addEventListener("DOMContentLoaded", function () {
+            calculateTotalPrice();
+        });
+
+        async function removeFromCart(variantId) {
+            // Update the URL with the correct path including the area
+            await fetch('@Url.Action("RemoveFromCart", "Cart")?variantId=' + variantId, { method: 'POST' });
+
+            // After removing, update the cart count and remove the item from the view
+            updateCartCount();
+            removeCartItem(variantId);
+        }
+
+        function removeCartItem(variantId) {
+            // Remove the item from the view dynamically
+            const cartItemElement = document.getElementById('cartItem-' + variantId);
+            if (cartItemElement) {
+                cartItemElement.remove();
+                calculateTotalPrice(); // Recalculate total price after removing an item
+            }
+        }
+
+        async function updateCartCount() {
+            // Update the URL with the correct path including the area
+            const response = await fetch('@Url.Action("GetCartItemCount", "Cart")');
+            const count = await response.json();
+
+            // Update the cart count in the view
+            document.getElementById('cartCount').innerText = count;
+        }
+
+        async function updateQuantity(variantId, change) {
+            console.log('Updating quantity for variantId:', variantId);
+
+            const response = await fetch('@Url.Action("UpdateCartItemQuantity", "Cart")?variantId=' + variantId + '&change=' + change, { method: 'POST' });
+            const updatedQuantity = await response.json();
+
+            console.log('Updated quantity:', updatedQuantity);
+
+            // Update the quantity in the view
+            const cartItemElement = document.getElementById('cartItem-' + variantId);
+            const quantityElement = cartItemElement ? cartItemElement.querySelector('.quantity-controls span') : null;
+
+            if (quantityElement) {
+                quantityElement.innerText = updatedQuantity;
+                calculateTotalPrice();
+            } else {
+                console.error('Quantity element not found within cart item element or cart item element not found for variantId:', variantId);
+            }
+        }
+
+        function calculateTotalPrice() {
+            let totalPrice = 0;
+
+            // Loop through each cart item and calculate the total price
+            document.querySelectorAll('.table tbody tr').forEach(item => {
+                const quantity = parseInt(item.querySelector('.quantity-controls span').innerText);
+                const discountedPriceText = item.querySelector('td:nth-child(3) span').innerText; // Get the discounted price text directly from the third column
+                const discountedPrice = parseFloat(discountedPriceText.replace(' TL', ''));
+
+                totalPrice += quantity * discountedPrice;
+            });
+
+            // Update the total price in the view
+            document.getElementById('totalPrice').innerText = totalPrice.toFixed(2) + ' TL';
+        }
+
+        function redirectToCheckout() {
+        // Get the total price from the calculated total price
+        const totalPrice = document.getElementById('totalPrice').innerText;
+
+        // Convert the formatted price to a valid decimal representation
+        const decimalTotalPrice = parseFloat(totalPrice.replace(' TL', '').replace(',', ''));
+
+        // Create an array to store the cart items
+        const cartItems = [];
+
+        // Loop through each cart item and add details to the array
+        document.querySelectorAll('.table tbody tr').forEach(item => {
+            const variantId = parseInt(item.id.split('-')[1]); // Extract VariantId from the element ID
+            const quantity = parseInt(item.querySelector('.quantity-controls span').innerText);
+
+            // Create a cart item object with the expected structure
+            const cartItem = {
+                VariantId: variantId,
+                Quantity: quantity,
+            };
+
+            cartItems.push(cartItem);
+        });
+
+        // Create a form and submit it to the checkout page
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '@Url.Action("Payment", "Checkout")'; // Replace with the actual URL of your checkout action
+
+        // Add input fields for items and total price
+        const itemsInput = document.createElement('input');
+        itemsInput.type = 'hidden';
+        itemsInput.name = 'cartItems';
+        itemsInput.value = JSON.stringify(cartItems);
+
+        const totalPriceInput = document.createElement('input');
+        totalPriceInput.type = 'hidden';
+        totalPriceInput.name = 'totalPrice';
+        totalPriceInput.value = decimalTotalPrice; // Use the converted decimal value
+
+        // Append input fields to the form
+        form.appendChild(itemsInput);
+        form.appendChild(totalPriceInput);
+
+        // Append the form to the body and submit it
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    </script>
+    }
+}

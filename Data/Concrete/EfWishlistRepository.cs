@@ -28,9 +28,9 @@ namespace eCommerce.Data.Concrete
             _context.SaveChanges();
         }
 
-        public void RemoveFromWishlist(int productId, string userId)
+        public void RemoveFromWishlist(int variantId, string userId)
         {
-            var wishlistItem = _context.WishlistItems.FirstOrDefault(item => item.UserId == userId && item.ProductId == productId);
+            var wishlistItem = _context.WishlistItems.FirstOrDefault(item => item.UserId == userId && item.VariantId == variantId);
 
             if (wishlistItem != null)
             {
@@ -40,11 +40,11 @@ namespace eCommerce.Data.Concrete
         }
 
 
-        public void ToggleWishlistItem(int productId, string userId)
+        public void ToggleWishlistItem(int variantId, string userId)
         {
             // Your logic to toggle the wishlist item (add if not exists, remove if exists)
             // Example logic: Check if the item exists, if yes, remove it; if not, add it.
-            var existingItem = _context.WishlistItems.FirstOrDefault(wi => wi.ProductId == productId && wi.UserId == userId);
+            var existingItem = _context.WishlistItems.FirstOrDefault(wi => wi.VariantId == variantId && wi.UserId == userId);
 
             if (existingItem != null)
             {
@@ -55,7 +55,7 @@ namespace eCommerce.Data.Concrete
                 var newItem = new WishlistItem
                 {
                     UserId = userId,
-                    ProductId = productId
+                    VariantId = variantId
                 };
                 _context.WishlistItems.Add(newItem);
             }

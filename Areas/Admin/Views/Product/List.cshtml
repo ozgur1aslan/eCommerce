@@ -119,10 +119,10 @@
                         }
                     </td>
                     <td>@item.ProductName</td>
-                    <td>     
+                    <td>
                         <p>@item?.Variants?.Count()</p>
                         @if(item?.Variants?.Count() > 0) {
-                            <a asp-controller="Variant" asp-action="List" class="btn btn-sm btn-primary">See Them</a>
+                            <a asp-controller="Variant" asp-action="List" asp-route-id="@item?.ProductId" class="btn btn-sm btn-primary">See Them</a>
                         }
                     </td>
                     <td>

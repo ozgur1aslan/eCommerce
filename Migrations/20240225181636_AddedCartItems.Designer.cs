@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eCommerce.Data.Concrete.EfCore;
 
@@ -10,9 +11,11 @@ using eCommerce.Data.Concrete.EfCore;
 namespace eCommerce.Migrations
 {
     [DbContext(typeof(eCommerceContext))]
-    partial class eCommerceContextModelSnapshot : ModelSnapshot
+    [Migration("20240225181636_AddedCartItems")]
+    partial class AddedCartItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.8");
@@ -274,9 +277,6 @@ namespace eCommerce.Migrations
                 {
                     b.Property<int>("CartItemId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Quantity")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("UserId")

@@ -1,70 +1,53 @@
-@model ProductEditViewModel
+@model EditVariantViewModel
 
 
+<h2>Update Variant</h2>
 
-
-<form asp-action="Edit" method="post">
-<div class="row">
-    <div class="col-9">
-        <div class="bg-white p-4">
-            <h1>Edit Product</h1>
-            
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input type="hidden" asp-for="ProductId">
-                <div class="mb-3">
-                    <label asp-for="ProductName" class="form-label"></label>
-                    <input asp-for="ProductName" class="form-control">
-                    <span asp-validation-for="ProductName" class="text-danger"></span>
-                </div>
-                <div class="mb-3">
-                    <label asp-for="GenderId" class="form-label">Gender</label>
-                    <select asp-for="GenderId" asp-items="ViewBag.Genders" class="form-select">
-                        <option value="">
-                            Choose
-                        </option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label asp-for="CategoryId" class="form-label">Category</label>
-                    <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select">
-                        <option value="">
-                            Choose
-                        </option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label asp-for="SeasonId" class="form-label">Season</label>
-                    <select asp-for="SeasonId" asp-items="ViewBag.Seasons" class="form-select">
-                        <option value="">
-                            Choose
-                        </option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label asp-for="BrandId" class="form-label">Brand</label>
-                    <select asp-for="BrandId" asp-items="ViewBag.Brands" class="form-select">
-                        <option value="">
-                            Choose
-                        </option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Update</button>
-
-        </div>
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    
+    <div class="mb-3">
+        <input asp-for="VariantId" value="@Model.VariantId">
     </div>
-    <div class="col-3">
-        <div class="bg-white p-4">
-            @foreach(var tag in ViewBag.Tags){          
-            <div class="form-check">
-                <input type="checkbox" class="from-check-input" name="tagIds" value="@tag.TagId" id="tag_@tag.TagId"
-                    @(Model.Tags.Any(i=>i.TagId == tag.TagId) ? "checked" : "" )
-                > 
-                <label for="tag_@tag.TagId" class="form-check-label">
-                    @tag.Text
-                </label>
+
+    <div id="variantContainer">
+        <div class="variant-form">
+            <h4>Variant</h4>
+            <div class="form-group">
+                <label asp-for="Price">Price:</label>
+                <input asp-for="Price" class="form-control" />
+                <label asp-for="DiscountedPrice">Discounted Price:</label>
+                <input asp-for="DiscountedPrice" class="form-control" />
+                <label asp-for="Stock">Stock:</label>
+                <input asp-for="Stock" class="form-control" />
+
+                <div class="option-group">
+                    @{
+                        var options = ViewBag.Options;
+                        if (options != null)
+                        {
+                            for (int i = 0; i < options.Count; i++)
+                            {
+                                <div class="option-group">
+                                    <label>@options[i].OptionName:</label>
+                                    
+                                    <select asp-for="Values[i].ValueId" class="form-control">
+                                        <option value="">Select...</option>
+                                        @{
+                                            var values = options[i].Values;
+                                            foreach (var value in values)
+                                            {
+                                                <option value="@value.ValueId">@value.ValueText</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
             </div>
-             }
         </div>
     </div>
-</div>
+    <button type="submit" class="btn btn-success">Update</button>
 </form>
+

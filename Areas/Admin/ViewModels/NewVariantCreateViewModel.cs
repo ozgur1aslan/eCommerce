@@ -3,19 +3,20 @@ using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 using eCommerce.Models;
 
-namespace eCommerce.ViewModels
+namespace eCommerce.Areas.Admin.ViewModels
 {
     
 
     public class NewVariantCreateViewModel
     {
+        
         public decimal Price { get; set; }
         public decimal? DiscountedPrice { get; set; }
         public int Stock { get; set; }
 
         public int? ProductId { get; set; }
 
-        public List<NewValueCreateViewModel>? Values { get; set; } = new List<NewValueCreateViewModel>();
+        public List<NewVariantValueViewModel>? Values { get; set; } = new List<NewVariantValueViewModel>();
         public List<IFormFile> Pictures { get; set; } = new List<IFormFile>();
     }
 
@@ -23,7 +24,7 @@ namespace eCommerce.ViewModels
   
     
 
-    public class NewValueCreateViewModel
+    public class NewVariantValueViewModel
     {
 
             public int ValueId { get; set; }

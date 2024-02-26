@@ -2,6 +2,7 @@ using eCommerce.Data.Abstract;
 using eCommerce.Data.Concrete.EfCore;
 using eCommerce.Models;
 using eCommerce.ViewModels;
+using eCommerce.Areas.Admin.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +31,7 @@ namespace eCommerce.Areas.Admin.Controllers
 
 
 
-        public async Task<IActionResult> List()
+        public async Task<IActionResult> List(int? id)
         {
 
             var variants = _variantRepository.Variants
@@ -44,7 +45,8 @@ namespace eCommerce.Areas.Admin.Controllers
                 .ThenInclude(p => p.Category)
             .Include(v => v.Pictures)
             .Include(v => v.Values)
-                .ThenInclude(v => v.Option);
+                .ThenInclude(v => v.Option)
+            .Where(v => v.ProductId == id);
 
             
 
@@ -131,26 +133,70 @@ namespace eCommerce.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var variant = _variantRepository.Variants.FirstOrDefault(c=> c.VariantId == id);
+            var variant = _variantRepository.Variants
+            .Include(v => v.Product)
+            .Include(v => v.Pictures)
+            .Include(v => v.Values)
+                .ThenInclude(v => v.Option)
+            .FirstOrDefault(v => v.VariantId == id);
+
             if(variant == null){
                 return NotFound();
             }
 
 
-            return View(variant);
+            var variantToEditVM = new EditVariantViewModel
+                        {
+            VariantId = variant.VariantId,
+            Price = variant.Price,
+            DiscountedPrice = variant.DiscountedPrice,
+            Stock = variant.Stock,
+            ProductId = variant.ProductId,
+            Values = variant.Values
+                        };
+            
+
+
+            var options = _context.Options.Include(p => p.Values).ToList();
+            ViewBag.Options = options;
+
+
+            return View(variantToEditVM);
         }
 
 
         [HttpPost]
-        public IActionResult Edit(Variant variant)
+        public IActionResult Edit(EditVariantViewModel variantToEditVM)
         {
-            if(ModelState.IsValid){
-                
-                _variantRepository.UpdateVariant(variant);
-                return RedirectToAction("List");
+
+            if(variantToEditVM == null){
+                return NotFound();
             }
 
-            return View(variant);
+            
+            if(ModelState.IsValid){
+                
+            var variant = new Variant
+                        {
+            VariantId = variantToEditVM.VariantId,
+            Price = variantToEditVM.Price,
+            DiscountedPrice = variantToEditVM.DiscountedPrice,
+            Stock = variantToEditVM.Stock,
+            ProductId = variantToEditVM.ProductId,
+            Values = variantToEditVM.Values
+                        };
+            
+
+
+            _variantRepository.UpdateVariant(variant);
+
+            return RedirectToAction("List");
+            }
+
+
+            var options = _context.Options.Include(p => p.Values).ToList();
+            ViewBag.Options = options;
+            return View(variantToEditVM);
         }
 
 

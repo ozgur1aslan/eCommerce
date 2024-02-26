@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<Variant>
 @inject SignInManager<AppUser> SignInManager
 @inject eCommerce.Services.WishlistService WishlistService
+@inject eCommerce.Services.CartService CartService
 
 <div class="container mt-5">
     <div class="row">
@@ -26,15 +27,19 @@
                     </a>
                     <div class="card-body">
                         @if (SignInManager.IsSignedIn(User)){
-                            <button class="btn btn-outline-danger btn-sm float-start" onclick="toggleWishlist(@item.ProductId)">
-                                <i id="wishlistIcon_@item.ProductId" class="heart-icon @if (WishlistService.IsInWishlist(item.Product.ProductId)) { <text>fas text-danger</text> } else { <text>far text-danger</text> } fa-heart"></i>
+                            <button class="btn btn-outline-danger btn-sm float-start" onclick="toggleWishlist(@item.VariantId)">
+                                <i id="wishlistIcon_@item.VariantId" class="heart-icon @if (WishlistService.IsInWishlist(item.VariantId)) { <text>fas text-danger</text> } else { <text>far text-danger</text> } fa-heart"></i>
                                 Add to Wishlist
                             </button>
+
+
+
+                            <button class="btn btn-outline-danger btn-sm float-start" onclick="toggleCart(@item.VariantId)">
+                                <i id="cartIcon_@item.VariantId" class="heart-icon @if (CartService.IsInCart(item.VariantId)) { <text>fas text-danger</text> } else { <text>far text-danger</text> } fa-heart"></i>
+                                Add to Cart
+                            </button>
                         }
-                        
-                        <button class="btn btn-primary btn-sm float-end" onclick="addToCart(@item.ProductId)">
-                            Add to Cart
-                        </button>
+
                     </div>
                 </div>
             </div>
@@ -42,19 +47,20 @@
     </div>
 </div>
 
+
 @section scripts {
     <script>
-        async function toggleWishlist(productId) {
+        async function toggleWishlist(variantId) {
             // Update the URL without the area name
-            await fetch('User/Wishlist/ToggleWishlist?productId=' + productId, { method: 'POST' });
+            await fetch('User/Wishlist/ToggleWishlist?variantId=' + variantId, { method: 'POST' });
 
             // After toggling, update the heart icon and the count in the navbar
-            updateWishlistIcon(productId);
+            updateWishlistIcon(variantId);
             updateWishlistCount();
         }
 
-        function updateWishlistIcon(productId) {
-            const icon = document.getElementById(`wishlistIcon_${productId}`);
+        function updateWishlistIcon(variantId) {
+            const icon = document.getElementById(`wishlistIcon_${variantId}`);
             icon.classList.toggle('far'); // Toggle unfilled heart
             icon.classList.toggle('fas'); // Toggle filled heart
         }
@@ -69,12 +75,43 @@
 
         
 
-        function addToCart(productId) {
-            // You can implement the logic to add to the cart here (e.g., send an AJAX request).
-            alert('Added to Cart: ' + productId);
+
+
+        async function toggleCart(variantId) {
+            // Update the URL without the area name
+            await fetch('Cart/ToggleCart?variantId=' + variantId, { method: 'POST' });
+
+            // After toggling, update the heart icon and the count in the navbar
+            updateCartIcon(variantId);
+            updateCartCount();
         }
+
+        function updateCartIcon(variantId) {
+            const icon = document.getElementById(`cartIcon_${variantId}`);
+            icon.classList.toggle('far'); // Toggle unfilled heart
+            icon.classList.toggle('fas'); // Toggle filled heart
+        }
+
+        function updateCartCount() {
+            fetch('Cart/GetCartItemCount')
+                .then(response => response.json())
+                .then(count => {
+                    document.getElementById('cartCount').innerText = count;
+                });
+        }
+
+
+
+
+
+
+
 
         // Update the count when the page loads
         updateWishlistCount();
+
+
+
+        updateCartCount();
     </script>
 }

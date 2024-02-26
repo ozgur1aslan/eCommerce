@@ -8,7 +8,7 @@ namespace eCommerce.Data.Abstract
         IQueryable<WishlistItem> WishlistItems { get; }
         int GetWishlistItemCount(string userId);
         void AddToWishlist(WishlistItem wishlistItem);
-        void RemoveFromWishlist(int productId, string userId);
-        void ToggleWishlistItem(int productId, string userId);
+        void RemoveFromWishlist(int variantId, string userId);
+        void ToggleWishlistItem(int variantId, string userId);
     }
 }

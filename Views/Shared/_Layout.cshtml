@@ -2,6 +2,7 @@
 @inject UserManager<AppUser> UserManager
 
 @inject eCommerce.Services.WishlistService WishlistService
+@inject eCommerce.Services.CartService CartService
 
 <!DOCTYPE html>
 <html lang="en">
@@ -53,6 +54,13 @@
                                     <span id="wishlistCount" class="wishlist-badge">@WishlistService.GetWishlistItemCount()</span>
                                 </a>
                             </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Cart" asp-action="Index">
+                                    Cart
+                                    <span id="cartCount" class="cart-badge">@CartService.GetCartItemCount()</span>
+                                </a>
+                            </li>
                             var user = await UserManager.GetUserAsync(User);
                             if (user != null)
                             {
@@ -79,6 +87,8 @@
                             <li class="nav-item">
                                 <a asp-controller="Auth" asp-action="Login" class="nav-link text-dark">Login</a>
                             </li>
+
+                            
                         }
                     </ul>
                     @section Scripts {
@@ -94,6 +104,21 @@
                             if (isAuthenticated) {
                                 updateWishlistCount();
                             }
+
+
+                            async function updateCartCount() {
+                                const response = await fetch('/Cart/GetCartItemCount');
+                                const count = await response.json();
+                                document.getElementById('cartCount').innerText = count;
+                            }
+
+                            const isAuthenticated = @(User.Identity.IsAuthenticated.ToString().ToLower());
+
+                            if (isAuthenticated) {
+                                updateCartCount();
+                            }
+
+
                         </script>
                     }
                 </div>

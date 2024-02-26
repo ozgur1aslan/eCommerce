@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eCommerce.Data.Concrete.EfCore;
 
@@ -10,9 +11,11 @@ using eCommerce.Data.Concrete.EfCore;
 namespace eCommerce.Migrations
 {
     [DbContext(typeof(eCommerceContext))]
-    partial class eCommerceContextModelSnapshot : ModelSnapshot
+    [Migration("20240224232515_UserModelChanges5")]
+    partial class UserModelChanges5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.8");
@@ -268,31 +271,6 @@ namespace eCommerce.Migrations
                     b.HasKey("BrandId");
 
                     b.ToTable("Brands");
-                });
-
-            modelBuilder.Entity("eCommerce.Models.CartItem", b =>
-                {
-                    b.Property<int>("CartItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("VariantId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("CartItemId");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("VariantId");
-
-                    b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("eCommerce.Models.Category", b =>
@@ -591,25 +569,6 @@ namespace eCommerce.Migrations
                         .HasForeignKey("VariantsVariantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("eCommerce.Models.CartItem", b =>
-                {
-                    b.HasOne("eCommerce.Models.AppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("eCommerce.Models.Variant", "Variant")
-                        .WithMany()
-                        .HasForeignKey("VariantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-
-                    b.Navigation("Variant");
                 });
 
             modelBuilder.Entity("eCommerce.Models.Picture", b =>

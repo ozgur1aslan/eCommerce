@@ -19,7 +19,7 @@ namespace eCommerce.Data.Concrete.EfCore
         public DbSet<UserGender> UserGenders => Set<UserGender>();
 
         public DbSet<WishlistItem> WishlistItems { get; set; }
-
+        public DbSet<CartItem> CartItems { get; set; }
 
 
         public DbSet<Product> Products => Set<Product>();
@@ -27,6 +27,9 @@ namespace eCommerce.Data.Concrete.EfCore
         public DbSet<Picture> Pictures => Set<Picture>();
         public DbSet<Option> Options => Set<Option>();
         public DbSet<Value> Values => Set<Value>();
+
+
+        
 
 
         

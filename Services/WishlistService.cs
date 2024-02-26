@@ -16,6 +16,7 @@ namespace eCommerce.Services
             _wishlistRepository = wishlistRepository;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
+            
         }
 
         public int GetWishlistItemCount()
@@ -24,19 +25,19 @@ namespace eCommerce.Services
             return _wishlistRepository.GetWishlistItemCount(userId);
         }
 
-        public void AddToWishlist(int productId)
+        public void AddToWishlist(int variantId)
         {
             var userId = _userManager.GetUserId(_httpContextAccessor.HttpContext.User);
 
             if (userId != null)
             {
                 // Check if the product is already in the wishlist
-                if (!_wishlistRepository.WishlistItems.Any(item => item.UserId == userId && item.ProductId == productId))
+                if (!_wishlistRepository.WishlistItems.Any(item => item.UserId == userId && item.VariantId == variantId))
                 {
                     var wishlistItem = new WishlistItem
                     {
                         UserId = userId,
-                        ProductId = productId
+                        VariantId = variantId
                     };
 
                     _wishlistRepository.AddToWishlist(wishlistItem);
@@ -44,17 +45,17 @@ namespace eCommerce.Services
             }
         }
 
-        public void RemoveFromWishlist(int productId)
+        public void RemoveFromWishlist(int variantId)
         {
             var userId = _userManager.GetUserId(_httpContextAccessor.HttpContext.User);
-            _wishlistRepository.RemoveFromWishlist(productId, userId);
+            _wishlistRepository.RemoveFromWishlist(variantId, userId);
         }
         
 
-        public bool IsInWishlist(int productId)
+        public bool IsInWishlist(int variantId)
         {
             var userId = _userManager.GetUserId(_httpContextAccessor.HttpContext.User);
-            return _wishlistRepository.WishlistItems.Any(item => item.UserId == userId && item.ProductId == productId);
+            return _wishlistRepository.WishlistItems.Any(item => item.UserId == userId && item.VariantId == variantId);
         }
 
 
