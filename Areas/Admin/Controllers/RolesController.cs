@@ -1,9 +1,13 @@
 using eCommerce.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace eCommerce.Controllers
+
+namespace eCommerce.Areas.Admin.Controllers
 {
+    [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class RolesController:Controller{
         private readonly RoleManager<AppRole> _roleManager;
 

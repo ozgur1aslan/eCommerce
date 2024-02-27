@@ -6,10 +6,12 @@ using eCommerce.Areas.Admin.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace eCommerce.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class VariantController:Controller{
 
 
@@ -127,77 +129,66 @@ namespace eCommerce.Areas.Admin.Controllers
             
         
 
-        public IActionResult Edit(int? id)
+        // GET: Variant/Edit/5
+    public async Task<IActionResult> Edit(int? id)
+    {
+        if (id == null)
         {
-            if(id == null){
-                return NotFound();
-            }
-
-            var variant = _variantRepository.Variants
-            .Include(v => v.Product)
-            .Include(v => v.Pictures)
-            .Include(v => v.Values)
-                .ThenInclude(v => v.Option)
-            .FirstOrDefault(v => v.VariantId == id);
-
-            if(variant == null){
-                return NotFound();
-            }
-
-
-            var variantToEditVM = new EditVariantViewModel
-                        {
-            VariantId = variant.VariantId,
-            Price = variant.Price,
-            DiscountedPrice = variant.DiscountedPrice,
-            Stock = variant.Stock,
-            ProductId = variant.ProductId,
-            Values = variant.Values
-                        };
-            
-
-
-            var options = _context.Options.Include(p => p.Values).ToList();
-            ViewBag.Options = options;
-
-
-            return View(variantToEditVM);
+            return NotFound();
         }
 
-
-        [HttpPost]
-        public IActionResult Edit(EditVariantViewModel variantToEditVM)
+        var variant = await _context.Variants.FindAsync(id);
+        if (variant == null)
         {
-
-            if(variantToEditVM == null){
-                return NotFound();
-            }
-
-            
-            if(ModelState.IsValid){
-                
-            var variant = new Variant
-                        {
-            VariantId = variantToEditVM.VariantId,
-            Price = variantToEditVM.Price,
-            DiscountedPrice = variantToEditVM.DiscountedPrice,
-            Stock = variantToEditVM.Stock,
-            ProductId = variantToEditVM.ProductId,
-            Values = variantToEditVM.Values
-                        };
-            
-
-
-            _variantRepository.UpdateVariant(variant);
-
-            return RedirectToAction("List");
-            }
-
-
-            var options = _context.Options.Include(p => p.Values).ToList();
-            ViewBag.Options = options;
-            return View(variantToEditVM);
+            return NotFound();
         }
+
+        var options = _context.Options.Include(p => p.Values).ToList();
+    ViewBag.Options = options;
+
+        return View(variant);
+    }
+
+    // POST: Variant/Edit/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, [Bind("VariantId,Price,DiscountedPrice,Stock")] Variant variant)
+    {
+        if (id != variant.VariantId)
+        {
+            return NotFound();
+        }
+
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                _context.Update(variant);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!VariantExists(variant.VariantId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction("Index", "Home"); // Redirect to wherever you want after editing
+        }
+
+        var options = _context.Options.Include(p => p.Values).ToList();
+    ViewBag.Options = options;
+        return View(variant);
+    }
+
+    private bool VariantExists(int id)
+    {
+        return _context.Variants.Any(e => e.VariantId == id);
+    }
 
 
         [HttpPost]

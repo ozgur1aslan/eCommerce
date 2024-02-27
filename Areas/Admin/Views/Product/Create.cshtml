@@ -2,10 +2,17 @@
 
 <h2>Create Product</h2>
 
+
+
 <form asp-action="Create" method="post" enctype="multipart/form-data">
     <div class="form-group">
         <label asp-for="ProductName">Product Name:</label>
         <input asp-for="ProductName" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <label asp-for="GenderId" class="form-label">Gender</label>

@@ -1,0 +1,55 @@
+@model Order
+
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<h2>Order Details</h2>
+
+
+
+    <div>
+        <h4>Order Status: @Model.OrderStatus</h4>
+        <p>Purchase Date: @Model.PurchaseDate.ToString("yyyy-MM-dd HH:mm:ss")</p>
+        <p>Total Price: @Model.TotalPrice</p>
+        <p>Address: @Model.Address</p>
+
+        <h5>Purchased Items:</h5>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 200px;">Image</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.PurchasedItems)
+                {
+                    <tr>
+                        <td><img src="/@item.Variant.Pictures.First().Path" class="img-fluid" alt=""></td>
+                        <td>@item.Variant.Product.ProductName</td>
+                        <td>@item.Quantity</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <hr />
+
+        <h5>Change Order Status:</h5>
+        <form asp-controller="Admin" asp-action="ChangeOrderStatus" method="post">
+            <div class="form-group">
+                <label for="newStatus">New Order Status:</label>
+                <select class="form-control" id="newStatus" name="newStatus">
+                    <option value="Pending">Pending</option>
+                    <option value="Processing">Processing</option>
+                    <option value="Shipped">Shipped</option>
+                    <!-- Add other order status options as needed -->
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Change Status</button>
+            <input type="hidden" name="orderId" value="@Model.OrderId" />
+        </form>
+    </div>
+

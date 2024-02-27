@@ -1,0 +1,36 @@
+@model List<Order>
+
+<h2>Your Orders</h2>
+
+@if (Model.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Purchase Date</th>
+                <th>Total Price</th>
+                <th>Order Status</th>
+                <th>Address</th>
+                <th>Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td>@order.PurchaseDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                    <td>@order.TotalPrice</td>
+                    <td>@order.OrderStatus</td>
+                    <td>@order.Address</td>
+                    <td>
+                        <a asp-action="OrderDetails" asp-controller="Account" asp-area="User" asp-route-id="@order.OrderId">Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No orders found.</p>
+}

@@ -12,6 +12,7 @@ namespace eCommerce.ViewModels
         [Range(1, 5, ErrorMessage = "The value must be between {1} and {2}.")]
         public bool? Rating { get; set; }
 
+        public string? Description { get; set; }
         public int? GenderId { get; set; }
         public int? CategoryId { get; set; }
         public int? SeasonId { get; set; }

@@ -1,9 +1,13 @@
-@model EditVariantViewModel
+@model Variant
 
 
 <h2>Update Variant</h2>
 
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
+
+    <div class="mb-3">
+        <input asp-for="VariantId" value="@Model.ProductId">
+    </div>
     
     <div class="mb-3">
         <input asp-for="VariantId" value="@Model.VariantId">
@@ -21,28 +25,12 @@
                 <input asp-for="Stock" class="form-control" />
 
                 <div class="option-group">
-                    @{
-                        var options = ViewBag.Options;
-                        if (options != null)
-                        {
-                            for (int i = 0; i < options.Count; i++)
-                            {
-                                <div class="option-group">
-                                    <label>@options[i].OptionName:</label>
-                                    
-                                    <select asp-for="Values[i].ValueId" class="form-control">
-                                        <option value="">Select...</option>
-                                        @{
-                                            var values = options[i].Values;
-                                            foreach (var value in values)
-                                            {
-                                                <option value="@value.ValueId">@value.ValueText</option>
-                                            }
-                                        }
-                                    </select>
-                                </div>
-                            }
-                        }
+                    @foreach (var option in ViewBag.Options)
+                    {
+                        <label>@option.OptionName:</label>
+                        <select asp-for="Values" asp-items="@(new SelectList(option.Values, "ValueId", "ValueText"))" class="form-control">
+                            <option value="">Select...</option>
+                        </select>
                     }
                 </div>
             </div>

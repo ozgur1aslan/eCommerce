@@ -1,11 +1,15 @@
 using eCommerce.Models;
 using eCommerce.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace eCommerce.Controllers
+
+namespace eCommerce.Areas.Admin.Controllers
 {
+    [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class UsersController:Controller{
 
         private UserManager<AppUser> _userManager;

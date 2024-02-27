@@ -13,7 +13,8 @@ namespace eCommerce.Models
             [Range(1, 5, ErrorMessage = "The value must be between {1} and {2}.")]
             public bool? Rating { get; set; }
 
-
+            public string? Description { get; set; }
+            public bool isActive { get; set; } = true;
 
             public int? GenderId { get; set; }
             public Gender Gender { get; set; } = null!;
@@ -30,6 +31,8 @@ namespace eCommerce.Models
 
             public List<Tag> Tags { get; set; } = new List<Tag>();
             public List<Variant> Variants { get; set; } = new List<Variant>();
+
+            public List<Comment>? Comments { get; set; } = new List<Comment>();
         }
 
         // Product Variant Model
@@ -38,15 +41,18 @@ namespace eCommerce.Models
             public int VariantId { get; set; }
             public decimal Price { get; set; }
             public decimal? DiscountedPrice { get; set; }
+            
             public int Stock { get; set; }
 
             public int? ProductId { get; set; }
-            public Product Product { get; set; } = null!;
+            public Product? Product { get; set; } = null!;
             
 
             public List<Value>? Values { get; set; } = new List<Value>();
 
             public List<Picture>? Pictures { get; set; } = new List<Picture>();
+
+            
         }
 
         public class Picture
@@ -79,7 +85,7 @@ namespace eCommerce.Models
             public int ValueId { get; set; }
             public string? ValueText { get; set; }
             public int? OptionId { get; set; }
-            public Option Option { get; set; } = null!;
+            public Option? Option { get; set; } = null!;
 
 
             public List<Variant>? Variants { get; set; } = new List<Variant>();

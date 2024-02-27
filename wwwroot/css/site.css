@@ -24,9 +24,19 @@ body {
 
 .wishlist-badge {
   font-size: 14px; /* Adjust the font size as needed */
-  background-color: #e7971e; /* Choose a color that fits your design */
+  background-color: #d62d16; /* Choose a color that fits your design */
   color: #fff; /* Text color */
   padding: 4px 8px; /* Adjust padding as needed */
   border-radius: 50%; /* Make it circular */
   margin-left: 5px; /* Adjust margin for spacing */
 }
+
+.cart-badge {
+  font-size: 14px; /* Adjust the font size as needed */
+  background-color: #e7d31e; /* Choose a color that fits your design */
+  color: #fff; /* Text color */
+  padding: 4px 8px; /* Adjust padding as needed */
+  border-radius: 50%; /* Make it circular */
+  margin-left: 5px; /* Adjust margin for spacing */
+}
+

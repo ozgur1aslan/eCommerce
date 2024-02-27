@@ -89,7 +89,7 @@ namespace eCommerce.Data.Concrete
             }
         }
 
-        public void EditProduct(Product product, int[] tagIds)
+        public void EditProduct(Product product, int[] tagIds, bool x)
         {
 
             var entity = _context.Products.Include(i=>i.Tags).FirstOrDefault(i=>i.ProductId == product.ProductId);
@@ -97,7 +97,13 @@ namespace eCommerce.Data.Concrete
             if(entity != null){
                 entity.ProductId = product.ProductId;
                 entity.ProductName = product.ProductName;
+                entity.isActive = x;
+                
 
+                if(product.Description != null)
+                {
+                    entity.Description = product.Description;
+                }
                 
 
                 if(product.CategoryId != null)

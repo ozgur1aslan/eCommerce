@@ -2,6 +2,7 @@ using eCommerce.Data.Abstract;
 using eCommerce.Data.Concrete.EfCore;
 using eCommerce.Models;
 using eCommerce.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using System.Linq;
 namespace eCommerce.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class ProductController:Controller{
 
 
@@ -63,6 +65,10 @@ namespace eCommerce.Areas.Admin.Controllers
             {
                 if (ModelState.IsValid)
                 {
+
+                    
+
+
                     // Map ViewModel to Product2 entity
                     var product = new Product
                     {
@@ -71,12 +77,25 @@ namespace eCommerce.Areas.Admin.Controllers
                         GenderId = model.GenderId,
                         CategoryId = model.CategoryId,
                         SeasonId = model.SeasonId,
-                        BrandId = model.BrandId
+                        BrandId = model.BrandId,
+                        Description = model.Description
                     };
 
                     // Map ViewModel to ProductVariant entities
                     foreach (var variantModel in model.Variants)
                     {
+
+                        if(variantModel.Price <= variantModel.DiscountedPrice ) {
+                            TempData["Message"] = "Discounted price must be lower than the regular price.";
+
+                            ViewBag.Categories = new SelectList(await _categoryRepository.Categories.ToListAsync(), "CategoryId", "CategoryName");
+                            ViewBag.Seasons = new SelectList(await _seasonRepository.Seasons.ToListAsync(), "SeasonId", "SeasonName");
+                            ViewBag.Brands = new SelectList(await _brandRepository.Brands.ToListAsync(), "BrandId", "BrandName");
+                            ViewBag.Genders = new SelectList(await _context.Genders.ToListAsync(), "GenderId", "GenderName");
+
+                            return View(model);
+                        };
+
                         var variant = new Variant
                         {
                             Price = variantModel.Price,
@@ -232,7 +251,14 @@ namespace eCommerce.Areas.Admin.Controllers
                 productEditVM.ProductId = product.ProductId;
                 productEditVM.ProductName = product.ProductName;
                 productEditVM.Tags = product.Tags;
+                productEditVM.isActive = product.isActive;
 
+
+
+                if(product.Description != null)
+                {
+                    productEditVM.Description = product.Description;
+                }
 
                 if(product.CategoryId != null)
                 {
@@ -270,8 +296,14 @@ namespace eCommerce.Areas.Admin.Controllers
 
                 entityToUpdate.ProductId = productEditVM.ProductId;
                 entityToUpdate.ProductName = productEditVM.ProductName;
+                productEditVM.isActive = productEditVM.isActive;
 
-                
+                bool x = productEditVM.isActive;
+
+                if (productEditVM.Description != null)
+                {
+                    entityToUpdate.Description = productEditVM.Description;
+                }
 
                 if(productEditVM.CategoryId != null)
                 {
@@ -295,7 +327,7 @@ namespace eCommerce.Areas.Admin.Controllers
 
 
 
-                _productRepository.EditProduct(entityToUpdate, tagIds);
+                _productRepository.EditProduct(entityToUpdate, tagIds, x);
                 return RedirectToAction("List");
             }
 

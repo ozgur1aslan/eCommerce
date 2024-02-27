@@ -30,6 +30,8 @@ namespace eCommerce.Data.Concrete.EfCore
         public DbSet<Option> Options => Set<Option>();
         public DbSet<Value> Values => Set<Value>();
 
+        public DbSet<Comment> Comments => Set<Comment>();
+
 
         
 

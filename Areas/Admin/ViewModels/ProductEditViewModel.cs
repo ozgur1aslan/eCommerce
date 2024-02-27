@@ -11,7 +11,8 @@ namespace eCommerce.ViewModels
         [Display(Name = "Product Name")]
         public string ProductName { get; set;} = null!;
 
-
+        public string? Description { get; set; }
+        public bool isActive { get; set; } = true;
 
         public int? GenderId { get; set; }
         public Gender? Gender { get; set; }

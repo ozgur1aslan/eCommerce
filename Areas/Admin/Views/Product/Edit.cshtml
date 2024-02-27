@@ -17,6 +17,17 @@
                     <span asp-validation-for="ProductName" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
+                    <label asp-for="Description" class="form-label"></label>
+                    <textarea asp-for="Description" class="form-control"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="isActive" class="form-label">Is Active:</label>
+                    <input asp-for="isActive" type="checkbox" class="form-check-input" />
+                </div>
+
+                <div class="mb-3">
                     <label asp-for="GenderId" class="form-label">Gender</label>
                     <select asp-for="GenderId" asp-items="ViewBag.Genders" class="form-select">
                         <option value="">

@@ -10,7 +10,7 @@ namespace eCommerce.Data.Abstract
 
 
         void EditProduct(Product product);
-        void EditProduct(Product product, int[] tagIds);
+        void EditProduct(Product product, int[] tagIds, bool x);
         void DeleteProduct(Product product);
 
 

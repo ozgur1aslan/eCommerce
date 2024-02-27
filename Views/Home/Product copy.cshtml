@@ -1,0 +1,112 @@
+@model Variant
+@inject eCommerce.Services.WishlistService WishlistService
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div id="imageCarousel" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                    @foreach (var picture in Model.Pictures)
+                    {
+                        <div class="carousel-item @if (picture == Model.Pictures[0]) { <text>active</text> }">
+                            <img src="/@picture.Path" class="d-block w-100" alt="@Model.Product.ProductName">
+                        </div>
+                    }
+                </div>
+                <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="product-details-container">
+                <h2>@Model.Product.ProductName</h2>
+
+                @if (Model.Product.Category != null)
+                {
+                    <p class="text-muted">Category: @Model.Product.Category.CategoryName</p>
+                }
+
+                @if (Model.Product.Brand != null)
+                {
+                    <p class="text-muted">Brand: @Model.Product.Brand.BrandName</p>
+                }
+
+                <p class="lead">Price: @Model.Price TL</p>
+
+                @if (Model.DiscountedPrice != null)
+                {
+                    <p class="lead text-danger">Discounted Price: @Model.DiscountedPrice TL</p>
+                }
+
+                <div>
+                    <button class="btn btn-outline-danger" onclick="toggleWishlist(@Model.VariantId)">
+                        <i id="wishlistIcon_@Model.VariantId" class="heart-icon @if (WishlistService.IsInWishlist(Model.VariantId)) { <text>fas text-danger</text> } else { <text>far text-danger</text> } fa-heart"></i>
+                        Add to Wishlist
+                    </button>
+                    <button class="btn btn-primary ms-2" onclick="addToCart(@Model.VariantId)">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <h4>Description</h4>
+        <!-- Add your product description here -->
+    </div>
+
+    <div class="mt-4">
+        <h4>Tags</h4>
+        <ul class="list-inline">
+            @foreach (var tag in Model.Product.Tags)
+            {
+                <li class="list-inline-item"><span class="badge bg-secondary">@tag.Text</span></li>
+            }
+        </ul>
+    </div>
+</div>
+
+
+@section scripts {
+    <script>
+        async function toggleWishlist(variantId) {
+            // Update the URL with the correct path including the area
+            await fetch('@Url.Action("ToggleWishlist", "Wishlist", new { area = "User" })?variantId=' + variantId, { method: 'POST' });
+
+            // After toggling, update the heart icon and the count in the navbar
+            updateWishlistIcon(variantId);
+            updateWishlistCount();
+        }
+
+        function updateWishlistIcon(variantId) {
+            const icon = document.getElementById(`wishlistIcon_${variantId}`);
+            icon.classList.toggle('far'); // Toggle unfilled heart
+            icon.classList.toggle('fas'); // Toggle filled heart
+        }
+
+        function updateWishlistCount() {
+            // Update the URL with the correct path including the area
+            fetch('@Url.Action("GetWishlistItemCount", "Wishlist", new { area = "User" })')
+                .then(response => response.json())
+                .then(count => {
+                    document.getElementById('wishlistCount').innerText = count;
+                });
+        }
+
+        function addToCart(variantId) {
+            // You can implement the logic to add to the cart here (e.g., send an AJAX request).
+            alert('Added to Cart: ' + variantId);
+        }
+
+        // Update the count when the page loads
+        updateWishlistCount();
+
+    </script>
+}

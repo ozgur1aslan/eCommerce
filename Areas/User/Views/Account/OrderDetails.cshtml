@@ -1,0 +1,40 @@
+@model Order
+
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<h2>Order Details</h2>
+
+
+
+    <div>
+        <h4>Order Status: @Model.OrderStatus</h4>
+        <p>Purchase Date: @Model.PurchaseDate.ToString("yyyy-MM-dd HH:mm:ss")</p>
+        <p>Total Price: @Model.TotalPrice</p>
+        <p>Address: @Model.Address</p>
+
+        <h5>Purchased Items:</h5>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 200px;">Image</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.PurchasedItems)
+                {
+                    <tr>
+                        <td><img src="/@item.Variant.Pictures.First().Path" class="img-fluid" alt=""></td>
+                        <td>@item.Variant.Product.ProductName</td>
+                        <td>@item.Quantity</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <hr />
+    </div>
+

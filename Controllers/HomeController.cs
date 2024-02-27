@@ -4,17 +4,23 @@ using eCommerce.Models;
 using eCommerce.Data.Abstract;
 using eCommerce.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using eCommerce.Data.Concrete.EfCore;
 
 namespace eCommerce.Controllers;
 
 public class HomeController : Controller
 {
     private IProductRepository _productRepository;
+    private IVariantRepository _variantRepository;
+    
+    private readonly eCommerceContext _context;
 
 
-        public HomeController(IProductRepository productRepository)
+        public HomeController(eCommerceContext context, IProductRepository productRepository, IVariantRepository variantRepository)
         {
             _productRepository = productRepository;
+            _variantRepository = variantRepository;
+            _context = context;
         }
 
     public IActionResult Index()
@@ -29,7 +35,7 @@ public class HomeController : Controller
         .ToList();
 
         // Select the product variants with the most stock and smallest variantId
-        var selectedVariants = products.Select(p => p.Variants
+        var selectedVariants = products.Where(v => v.isActive == true).Select(p => p.Variants
             .Where(v => v.Stock > 0)
             .OrderByDescending(v => v.Stock)
             .ThenBy(v => v.VariantId)
@@ -50,23 +56,46 @@ public class HomeController : Controller
 
 
 
-    public IActionResult Product(int productId)
+    public IActionResult Product(int variantId)
     {
-        var product = _productRepository.Products
-            .Include(p => p.Category)
-            .Include(p => p.Season)
-            .Include(p => p.Brand)
-            .Include(p => p.Tags)
-            .FirstOrDefault(p => p.ProductId == productId);
+        var variant = _variantRepository.Variants
+            .Include(v => v.Product)
+                .ThenInclude(v => v.Tags)
+            .Include(v => v.Product)
+                .ThenInclude(v => v.Brand)
+            .Include(v => v.Product)
+                .ThenInclude(v => v.Season)
+            .Include(v => v.Product)
+                .ThenInclude(v => v.Category)
+            .Include(v => v.Product)
+                .ThenInclude(v => v.Gender)
+            .Include(v => v.Pictures)
+            .Include(v => v.Values)
+                .ThenInclude(v => v.Option)
+            .FirstOrDefault(v => v.VariantId == variantId);
 
-        if (product == null)
+        var productId = variant.ProductId;
+
+        var variantFamily = _variantRepository.Variants
+            .Include(v => v.Pictures)
+            .Include(v => v.Values)
+            .ThenInclude(v => v.Option)
+            .Where(v => v.ProductId == productId && v.VariantId != variantId)
+            .ToList();
+
+        
+        ViewBag.VariantFamily = variantFamily;
+        
+
+
+
+        if (variant == null)
         {
             return NotFound();
         }
 
-        return View(product);
+        return View(variant);
     }
-
 
 
 

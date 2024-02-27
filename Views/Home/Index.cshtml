@@ -7,12 +7,12 @@
     <div class="row">
         @foreach(var item in Model)
         {
-            <div class="col-md-4 mb-4">
+            <div class="col-md-3 mb-4">
                 <div class="card">
-                    <a href="@Url.Action("Product", "Home", new { productId = item.ProductId })">
+                    <a href="@Url.Action("Product", "Home", new { variantId = item.VariantId })">
                         <img src="/@item.Pictures[0].Path" class="card-img-top" alt="@item.Product.ProductName">
                         <div class="card-body">
-                            <h5 class="card-title">@item.Product.ProductName</h5>
+                            <h6 class="card-title">@item.Product.ProductName</h6>
                             <p class="card-text">
                                 @if (item.DiscountedPrice != null)
                                 {
@@ -25,21 +25,18 @@
                             </p>
                         </div>
                     </a>
-                    <div class="card-body">
+                    <div class="card-footer">
                         @if (SignInManager.IsSignedIn(User)){
                             <button class="btn btn-outline-danger btn-sm float-start" onclick="toggleWishlist(@item.VariantId)">
                                 <i id="wishlistIcon_@item.VariantId" class="heart-icon @if (WishlistService.IsInWishlist(item.VariantId)) { <text>fas text-danger</text> } else { <text>far text-danger</text> } fa-heart"></i>
-                                Add to Wishlist
+                                Wishlist
                             </button>
 
-
-
-                            <button class="btn btn-outline-danger btn-sm float-start" onclick="toggleCart(@item.VariantId)">
-                                <i id="cartIcon_@item.VariantId" class="heart-icon @if (CartService.IsInCart(item.VariantId)) { <text>fas text-danger</text> } else { <text>far text-danger</text> } fa-heart"></i>
+                            <button class="btn btn-outline-warning btn-sm float-end" onclick="toggleCart(@item.VariantId)">
+                                <i id="cartIcon_@item.VariantId" class="fa @if (CartService.IsInCart(item.VariantId)) { <text>fa-shopping-cart text-warning</text> } else { <text>fa-shopping-cart text-warning</text> }"></i>
                                 Add to Cart
                             </button>
                         }
-
                     </div>
                 </div>
             </div>

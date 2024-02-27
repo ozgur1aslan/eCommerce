@@ -7,7 +7,6 @@
         <table class="table tabled-bordered mt-3">
             <thead>
                 <tr>
-                    <th style="width: 200px;">Image</th>
                     <th>Name</th>
                     <th>Products at Store</th>
                     <th>Options</th>
@@ -18,7 +17,6 @@
                 @foreach(var item in Model)
                 {
                     <tr>
-                        <td><img src="/img/2.jpg" class="img-fluid" alt=""></td>
                         <td>@item.Text</td>
                         <td>@item.Products.Count()</td>
                         <td>

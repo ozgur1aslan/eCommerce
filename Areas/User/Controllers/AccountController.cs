@@ -2,6 +2,7 @@ using eCommerce.Areas.User.ViewModels;
 using eCommerce.Data.Abstract;
 using eCommerce.Data.Concrete.EfCore;
 using eCommerce.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace eCommerce.Areas.Admin.Controllers
 {
     [Area("User")]
+    [Authorize]
     public class AccountController:Controller{
 
 
@@ -18,14 +20,18 @@ namespace eCommerce.Areas.Admin.Controllers
 
         private readonly EmailService _emailService;
 
+        private readonly IOrderRepository _orderRepository;
 
-        public AccountController(eCommerceContext context, UserManager<AppUser> userManager, EmailService emailService){
+
+        public AccountController(IOrderRepository orderRepository, eCommerceContext context, UserManager<AppUser> userManager, EmailService emailService){
 
             _context = context;
             
             _userManager = userManager;
 
             _emailService = emailService;
+
+            _orderRepository = orderRepository;
         }
 
 
@@ -116,6 +122,55 @@ namespace eCommerce.Areas.Admin.Controllers
             return View(model);
         }
 
+
+
+
+        public IActionResult Orders()
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+
+            var orders = _context.Orders
+            .Include(v => v.PurchasedItems)
+                .ThenInclude(i=>i.Variant)
+                    .ThenInclude(i=>i.Product)
+            .Include(v => v.PurchasedItems)
+                .ThenInclude(i=>i.Variant)
+                    .ThenInclude(i=>i.Pictures)
+            .Include(v => v.PurchasedItems)
+                .ThenInclude(i=>i.Variant)
+                    .ThenInclude(i=>i.Values)
+            .Where(item => item.UserId == userId).ToList();
+
+
+
+
+            return View(orders);
+        }
+
+
+        public IActionResult OrderDetails(int? id)
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+
+            var order = _context.Orders
+            .Include(v => v.PurchasedItems)
+                .ThenInclude(i=>i.Variant)
+                    .ThenInclude(i=>i.Product)
+            .Include(v => v.PurchasedItems)
+                .ThenInclude(i=>i.Variant)
+                    .ThenInclude(i=>i.Pictures)
+            .Include(v => v.PurchasedItems)
+                .ThenInclude(i=>i.Variant)
+                    .ThenInclude(i=>i.Values)
+            .FirstOrDefault(item => item.OrderId == id);
+
+
+
+
+            return View(order);
+        }
 
 
         

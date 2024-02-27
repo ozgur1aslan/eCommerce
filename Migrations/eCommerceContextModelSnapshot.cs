@@ -310,6 +310,39 @@ namespace eCommerce.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("eCommerce.Models.Comment", b =>
+                {
+                    b.Property<int>("CommentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("PublishedOn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserId1")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("CommentId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId1");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("eCommerce.Models.Gender", b =>
                 {
                     b.Property<int>("GenderId")
@@ -405,6 +438,9 @@ namespace eCommerce.Migrations
                     b.Property<int?>("CategoryId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("GenderId")
                         .HasColumnType("INTEGER");
 
@@ -416,6 +452,9 @@ namespace eCommerce.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int?>("SeasonId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("isActive")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("ProductId");
@@ -671,6 +710,23 @@ namespace eCommerce.Migrations
                     b.Navigation("Variant");
                 });
 
+            modelBuilder.Entity("eCommerce.Models.Comment", b =>
+                {
+                    b.HasOne("eCommerce.Models.Product", "Product")
+                        .WithMany("Comments")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("eCommerce.Models.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId1");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("eCommerce.Models.Order", b =>
                 {
                     b.HasOne("eCommerce.Models.AppUser", "User")
@@ -803,6 +859,8 @@ namespace eCommerce.Migrations
 
             modelBuilder.Entity("eCommerce.Models.Product", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Variants");
                 });
 

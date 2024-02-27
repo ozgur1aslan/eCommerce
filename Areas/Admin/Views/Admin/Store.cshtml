@@ -1,0 +1,60 @@
+<div class="text-center">
+    <div class="mainText">
+        <div class="mainText">
+            <h1 class="display-4 text-capitalize purpleText fw-bold">
+                Admin Menu
+            </h1>
+            <p class="smallText"><i>Product and related options</i></p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            
+
+                <div class="col-4 mb-5">
+                    <a class="admin-menu-a-tag" asp-area="Admin" asp-controller="Product" asp-action="List">
+                        <div class="admin-menu-card"
+                                           
+                        asp-append-version="true">
+                            <p>PRODUCTS</p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-4 mb-5">
+                    <a class="admin-menu-a-tag" asp-area="Admin" asp-controller="Category" asp-action="List">
+                        <div class="admin-menu-card"
+                                           
+                        asp-append-version="true">
+                            <p>CATEGORIES</p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-4 mb-5">
+                    <a class="admin-menu-a-tag" asp-area="Admin" asp-controller="Brand" asp-action="List">
+                        <div class="admin-menu-card"
+                                           
+                        asp-append-version="true">
+                            <p>BRAND</p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-4 mb-5">
+                    <a class="admin-menu-a-tag" asp-area="Admin" asp-controller="Tag" asp-action="List">
+                        <div class="admin-menu-card"
+                                           
+                        asp-append-version="true">
+                            <p>TAGS</p>
+                        </div>
+                    </a>
+                </div>
+        
+            
+
+
+        </div>
+    </div>
+</div>
