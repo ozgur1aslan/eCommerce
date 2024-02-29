@@ -95,6 +95,39 @@
                         }
                     }
                 </div>
+
+
+                <div class="row mt-4">
+    <h4>Variant Sizes</h4>
+    @if (ViewBag.VariantSizes != null && ViewBag.VariantSizes.Count > 0)
+    {
+        @foreach (var sizeVariant in ViewBag.VariantSizes)
+        {
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <a href="@Url.Action("Product", "Home", new { variantId = sizeVariant.VariantId })">
+                        <div class="card-body">
+                            <h6 class="card-title">Size: @sizeVariant.Values[0].ValueText</h6>
+                            <!-- Add other details if needed -->
+
+                        </div>
+                    </a>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No variant sizes available.</p>
+    }
+</div>
+
+
+
+
+
+
+
             </div>
         </div>
     </div>

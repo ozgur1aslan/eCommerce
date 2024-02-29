@@ -137,7 +137,7 @@ namespace eCommerce.Areas.Admin.Controllers
             return NotFound();
         }
 
-        var variant = await _context.Variants.FindAsync(id);
+        var variant = await _variantRepository.GetVariantByIdAsync(id);
         if (variant == null)
         {
             return NotFound();
@@ -149,10 +149,36 @@ namespace eCommerce.Areas.Admin.Controllers
         return View(variant);
     }
 
-    // POST: Variant/Edit/5
-    [HttpPost]
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, Variant variant, int[]? SelectedValues)
+        {
+            if (id != variant.VariantId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+
+                _variantRepository.UpdateVariant(variant, SelectedValues);
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            var options = _context.Options.Include(p => p.Values).ToList();
+            ViewBag.Options = options;
+            return View(variant);
+        }
+
+
+
+        // POST: Variant/Edit/5
+        [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("VariantId,Price,DiscountedPrice,Stock")] Variant variant)
+    public async Task<IActionResult> Edit2(int id, [Bind("VariantId,Price,DiscountedPrice,Stock")] Variant variant)
     {
         if (id != variant.VariantId)
         {

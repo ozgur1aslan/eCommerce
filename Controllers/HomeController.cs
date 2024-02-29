@@ -77,14 +77,60 @@ public class HomeController : Controller
         var productId = variant.ProductId;
 
         var variantFamily = _variantRepository.Variants
-            .Include(v => v.Pictures)
-            .Include(v => v.Values)
+        .Include(v => v.Pictures)
+        .Include(v => v.Values)
             .ThenInclude(v => v.Option)
-            .Where(v => v.ProductId == productId && v.VariantId != variantId)
-            .ToList();
+        .Where(v => v.ProductId == productId && v.VariantId != variant.VariantId  && v.Values.Any(val => val.OptionId == 2))
+        .GroupBy(v => v.Values.FirstOrDefault(val => val.OptionId == 2).OptionId) // Group by color (OptionId 2)
+        .Select(group => group.First()) // Select the first variant for each color
+        .ToList();
+
+
+
+
+
+var valueIdToFilter = variant.Values[1].ValueId;
+var productIdToFilter = variant.Product.ProductId;
+
+var filteredVariants = _variantRepository.Variants
+    .Include(v => v.Pictures)
+    .Include(v => v.Values)
+        .ThenInclude(val => val.Option)
+    .Where(v => v.Product.ProductId == productIdToFilter && v.Values.Any(val => val.ValueId == valueIdToFilter))
+    .ToList();
+
+
+var valueIdToFilter2 = variant.Values[1].ValueId;
+var productIdToFilter2 = variant.Product.ProductId;
+
+
+
+
+var filteredVariants2 = _variantRepository.Variants
+        .Include(v => v.Pictures)
+        .Include(v => v.Values)
+            .ThenInclude(val => val.Option)
+        .Where(v => v.Product.ProductId == variant.Product.ProductId)
+        .AsEnumerable()  // Switch to client-side evaluation
+        .Where(v => v.Values.Any(val => val.OptionId == 2 && val.ValueId != variant.Values
+                        .FirstOrDefault(vv => vv.OptionId == 2)?.ValueId))
+        .AsEnumerable()
+    .GroupBy(v => v.Values.FirstOrDefault(val => val.OptionId == 2)?.ValueId)
+    .Select(group => group.First())
+    .ToList();
+
+
+
+
+
+
+
+        ViewBag.VariantSizes = filteredVariants;
 
         
-        ViewBag.VariantFamily = variantFamily;
+        ViewBag.VariantFamily = filteredVariants2;
+
+        
         
 
 

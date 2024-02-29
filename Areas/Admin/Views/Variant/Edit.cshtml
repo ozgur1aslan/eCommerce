@@ -6,7 +6,7 @@
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
 
     <div class="mb-3">
-        <input asp-for="VariantId" value="@Model.ProductId">
+        <input asp-for="ProductId" value="@Model.ProductId">
     </div>
     
     <div class="mb-3">
@@ -28,8 +28,12 @@
                     @foreach (var option in ViewBag.Options)
                     {
                         <label>@option.OptionName:</label>
-                        <select asp-for="Values" asp-items="@(new SelectList(option.Values, "ValueId", "ValueText"))" class="form-control">
+                        <select name="SelectedValues" class="form-control">
                             <option value="">Select...</option>
+                            @foreach (var value in option.Values)
+                            {
+                                <option value="@value.ValueId">@value.ValueText</option>
+                            }
                         </select>
                     }
                 </div>
