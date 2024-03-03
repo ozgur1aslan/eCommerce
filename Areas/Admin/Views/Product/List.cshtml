@@ -1,9 +1,23 @@
 @model IEnumerable<Product>
 
+@if (!ViewData.ModelState.IsValid)
+{
+<div class="alert alert-danger">
+<strong>Error:</strong>
+<ul>
+    @foreach (var modelError in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+    {
+        <li>@modelError.ErrorMessage</li>
+    }
+</ul>
+</div>
+}
+
 <div class="row">
     <div class="col-12">
         <h2>Product List</h2>
         <a class="btn btn-primary" asp-action="Create">New Product</a>
+        
         <form method="get" action="FilterProducts" class="mb-3">
             <div class="row">
                 <div class="col-md-4">
@@ -73,9 +87,16 @@
                 {
                 <tr>
                     <td>
-                        @if (item.Variants[0].Pictures != null && item.Variants[0].Pictures.Any())
+                        @if(item.Variants.Any())
                         {
-                            <img src="/@item.Variants[0].Pictures.First().Path" class="img-fluid" alt="">
+                            @if (item?.Variants?.FirstOrDefault().Pictures != null && item.Variants.FirstOrDefault().Pictures.Any())
+                            {
+                                <img src="/@item.Variants.FirstOrDefault().Pictures.First().Path" class="img-fluid" alt="">
+                            }
+                            else
+                            {
+                                <p>No Image</p>
+                            }
                         }
                         else
                         {
@@ -91,21 +112,19 @@
                     </td>
                     <td>
                         @{
-                        var Prices = item.Variants
-                            .Where(v => v.Price != null)
-                            .Select(v => v.Price);
+                            var Prices = item.Variants?.Where(v => v.Price != null)?.Select(v => v.Price);
 
-                        if (Prices.Any())
-                        {
-                            var maxPrice = Prices.Max();
-                            var minPrice = Prices.Min();
-                            var averagePrice = Prices.Average();
+                            if (Prices != null && Prices.Any())
+                            {
+                                var maxPrice = Prices.Max();
+                                var minPrice = Prices.Min();
+                                var averagePrice = Prices.Average();
 
-                            <p>Max priced variant: @maxPrice TL</p>
-                            <p>Min priced variant: @minPrice TL</p>
-                            <p>Average price of variants: @averagePrice TL</p>
+                                <p>Max priced variant: @maxPrice TL</p>
+                                <p>Min priced variant: @minPrice TL</p>
+                                <p>Average price of variants: @averagePrice.ToString("F2") TL</p>
+                            }
                         }
-                    }
                     </td>
                     
                     <td>

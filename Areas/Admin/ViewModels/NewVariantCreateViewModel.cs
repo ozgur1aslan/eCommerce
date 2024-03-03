@@ -14,7 +14,7 @@ namespace eCommerce.Areas.Admin.ViewModels
         public decimal? DiscountedPrice { get; set; }
         public int Stock { get; set; }
 
-        public int? ProductId { get; set; }
+        public int ProductId { get; set; }
 
         public List<NewVariantValueViewModel>? Values { get; set; } = new List<NewVariantValueViewModel>();
         public List<IFormFile> Pictures { get; set; } = new List<IFormFile>();

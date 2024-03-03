@@ -85,17 +85,27 @@ namespace eCommerce.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id){
 
-            var brandToDelete = await _brandRepository.Brands.FirstOrDefaultAsync(c=> c.BrandId == id);
+            try
+            {
+                var brandToDelete = await _brandRepository.Brands.FirstOrDefaultAsync(c=> c.BrandId == id);
             
-            if(brandToDelete == null){
-                return NotFound();
+                if(brandToDelete == null){
+                    return NotFound();
+                }
+
+                _brandRepository.DeleteBrand(brandToDelete);
+            
+                return RedirectToAction("List");
             }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "You can't delete this brand beacuse it's used in at least one product.");
 
-            _brandRepository.DeleteBrand(brandToDelete);
+                var brands = await _brandRepository.Brands.Include(c => c.Products).ToListAsync();
+                return View("List", brands);
+            }
             
-            return RedirectToAction("List");
         }
-
 
     }
 }

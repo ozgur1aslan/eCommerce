@@ -97,7 +97,7 @@ namespace eCommerce.Areas.Admin.Controllers
                         // Process and save each uploaded image for the variant
                         foreach (var pictureFile in variantModel.Pictures)
                         {
-                            var imageUrl = _productRepository.ProcessAndSaveImage(pictureFile);
+                            var imageUrl = _variantRepository.ProcessAndSaveImage(pictureFile);
                             variantToCreate.Pictures.Add(new Picture { Path = imageUrl });
                         }
 
@@ -129,33 +129,61 @@ namespace eCommerce.Areas.Admin.Controllers
             
         
 
-        // GET: Variant/Edit/5
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null)
+        
+        public async Task<IActionResult> Edit(int? id)
         {
-            return NotFound();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+
+            var variant = await _variantRepository.Variants
+            .Include(v => v.Product)
+                .ThenInclude(p => p.Gender)
+            .Include(v => v.Product)
+                .ThenInclude(p => p.Season)
+            .Include(v => v.Product)
+                .ThenInclude(p => p.Brand)
+            .Include(v => v.Product)
+                .ThenInclude(p => p.Category)
+            .Include(v => v.Pictures)
+            .Include(v => v.Values)
+                .ThenInclude(v => v.Option)
+            .Where(v => v.VariantId == id).FirstOrDefaultAsync();
+
+
+            if (variant == null)
+            {
+                return NotFound();
+            }
+
+            var variantToEditVM = new EditVariantViewModel
+                        {
+                            VariantId = variant.VariantId,
+                            Price = variant.Price,
+                            DiscountedPrice = variant.DiscountedPrice,
+                            Stock = variant.Stock,
+                            ProductId = variant.ProductId,
+                            Values = variant.Values
+                            
+                        };
+                        
+
+
+            var options = _context.Options.Include(p => p.Values).ToList();
+            ViewBag.Options = options;
+
+            return View(variantToEditVM);
         }
-
-        var variant = await _variantRepository.GetVariantByIdAsync(id);
-        if (variant == null)
-        {
-            return NotFound();
-        }
-
-        var options = _context.Options.Include(p => p.Values).ToList();
-    ViewBag.Options = options;
-
-        return View(variant);
-    }
 
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Variant variant, int[]? SelectedValues)
+        public IActionResult Edit(int id, EditVariantViewModel variantVM, int[]? SelectedValues)
         {
-            if (id != variant.VariantId)
+            if (id != variantVM.VariantId)
             {
                 return NotFound();
             }
@@ -163,72 +191,80 @@ namespace eCommerce.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
 
-                _variantRepository.UpdateVariant(variant, SelectedValues);
+                _variantRepository.UpdateVariant(variantVM, SelectedValues);
 
                 return RedirectToAction("Index", "Home");
             }
 
             var options = _context.Options.Include(p => p.Values).ToList();
             ViewBag.Options = options;
-            return View(variant);
+            return View(variantVM);
         }
 
 
 
-        // POST: Variant/Edit/5
-        [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit2(int id, [Bind("VariantId,Price,DiscountedPrice,Stock")] Variant variant)
-    {
-        if (id != variant.VariantId)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(variant);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!VariantExists(variant.VariantId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction("Index", "Home"); // Redirect to wherever you want after editing
-        }
-
-        var options = _context.Options.Include(p => p.Values).ToList();
-    ViewBag.Options = options;
-        return View(variant);
-    }
-
-    private bool VariantExists(int id)
-    {
-        return _context.Variants.Any(e => e.VariantId == id);
-    }
-
+    
+        
+        
 
         [HttpPost]
         public async Task<IActionResult> Delete(int id){
-
             var variantToDelete = await _variantRepository.Variants.FirstOrDefaultAsync(c=> c.VariantId == id);
             
             if(variantToDelete == null){
                 return NotFound();
             }
 
-            _variantRepository.DeleteVariant(variantToDelete);
+            var productId = variantToDelete.ProductId;
+
+
             
-            return RedirectToAction("List");
+
+            try
+            {
+                _variantRepository.DeleteVariant(variantToDelete);
+
+
+                var variants = await _variantRepository.Variants
+                .Include(v => v.Product)
+                    .ThenInclude(p => p.Gender)
+                .Include(v => v.Product)
+                    .ThenInclude(p => p.Season)
+                .Include(v => v.Product)
+                    .ThenInclude(p => p.Brand)
+                .Include(v => v.Product)
+                    .ThenInclude(p => p.Category)
+                .Include(v => v.Pictures)
+                .Include(v => v.Values)
+                    .ThenInclude(v => v.Option)
+                .Where(v => v.ProductId == productId).ToListAsync();
+
+                return View("List", variants);
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "You can't delete this variant beacuse it's being used in at least one customer's wishlist/cart/order. Try deactivating it in the edit option.");
+
+
+
+                var variants = await _variantRepository.Variants
+                .Include(v => v.Product)
+                    .ThenInclude(p => p.Gender)
+                .Include(v => v.Product)
+                    .ThenInclude(p => p.Season)
+                .Include(v => v.Product)
+                    .ThenInclude(p => p.Brand)
+                .Include(v => v.Product)
+                    .ThenInclude(p => p.Category)
+                .Include(v => v.Pictures)
+                .Include(v => v.Values)
+                    .ThenInclude(v => v.Option)
+                .Where(v => v.ProductId == productId).ToListAsync();
+
+                return View("List", variants);
+            }
+
+            
         }
 
 

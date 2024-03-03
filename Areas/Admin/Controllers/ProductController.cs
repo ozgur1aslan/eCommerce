@@ -345,15 +345,39 @@ namespace eCommerce.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id){
 
-            var productToDelete = await _productRepository.Products.FirstOrDefaultAsync(c=> c.ProductId == id);
+            try
+            {
+                var productToDelete = await _productRepository.Products.FirstOrDefaultAsync(c=> c.ProductId == id);
             
-            if(productToDelete == null){
-                return NotFound();
+                if(productToDelete == null){
+                    return NotFound();
+                }
+
+                _productRepository.DeleteProduct(productToDelete);
+                
+                return RedirectToAction("List");
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "You can't delete this product beacuse it has variants. Try deactivating it in the edit option.");
+
+                var products = await _productRepository.Products
+                .Include(c => c.Category)
+                .Include(c => c.Season)
+                .Include(c => c.Brand)
+                .Include(c => c.Gender)
+                .Include(c => c.Variants)
+                .ThenInclude(c => c.Pictures).ToListAsync();
+
+                ViewBag.Categories = _categoryRepository.Categories.Include(c => c.Products).ToList();
+                ViewBag.Seasons = _seasonRepository.Seasons.Include(c => c.Products).ToList();
+                ViewBag.Brands = _brandRepository.Brands.Include(c => c.Products).ToList();
+                ViewBag.Genders = _context.Genders.Include(c => c.Products).ToList();
+
+
+                return View("List", products);
             }
 
-            _productRepository.DeleteProduct(productToDelete);
-            
-            return RedirectToAction("List");
         }
 
 

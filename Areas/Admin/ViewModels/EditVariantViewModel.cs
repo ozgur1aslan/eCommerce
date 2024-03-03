@@ -17,7 +17,7 @@ namespace eCommerce.Areas.Admin.ViewModels
         public int? ProductId { get; set; }
 
         public List<Value>? Values { get; set; } = new List<Value>();
-        //public List<IFormFile> Pictures { get; set; } = new List<IFormFile>();
+        public List<IFormFile> Pictures { get; set; } = new List<IFormFile>();
     }
 
 

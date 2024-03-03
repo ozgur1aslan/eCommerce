@@ -1,5 +1,19 @@
 @model List<Category>
 
+@if (!ViewData.ModelState.IsValid)
+{
+<div class="alert alert-danger">
+    <strong>Error:</strong>
+    <ul>
+        @foreach (var modelError in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <li>@modelError.ErrorMessage</li>
+        }
+    </ul>
+</div>
+}
+
+
 <div class="row">
     <div class="col-12">
         <h2>Category List</h2>

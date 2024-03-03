@@ -29,7 +29,7 @@ namespace eCommerce.Data.Concrete
             _context.SaveChanges();
         }
 
-        public void RemoveFromCart(int variantId, string userId)
+        public void RemoveFromCart(int? variantId, string userId)
         {
             var cartItem = _context.CartItems.FirstOrDefault(item => item.UserId == userId && item.VariantId == variantId);
 

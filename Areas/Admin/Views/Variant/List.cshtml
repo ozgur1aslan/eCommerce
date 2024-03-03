@@ -1,5 +1,18 @@
 @model IEnumerable<Variant>
 
+@if (!ViewData.ModelState.IsValid)
+{
+<div class="alert alert-danger">
+<strong>Error:</strong>
+<ul>
+    @foreach (var modelError in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+    {
+        <li>@modelError.ErrorMessage</li>
+    }
+</ul>
+</div>
+}
+
 <div class="row">
     <div class="col-12">
         <h2>Variant List</h2>
@@ -13,11 +26,11 @@
                     <th>Specifications</th>
                     <th>Price</th>
                     <th>Discounted Price</th>
+                    <th>Stock</th>
                     <th>Category</th>
                     <th>Season</th>
                     <th>Brand</th>
                     <th>Gender</th>
-                    <th>Variants</th>
                     <th style="width: 125px;">Options</th>
                 </tr>
             </thead>
@@ -42,7 +55,7 @@
                             @foreach(var val in item.Values){
                                 
                                 <p>
-                                    @val.Option.OptionName : @val.ValueText
+                                    @val.Option?.OptionName : @val.ValueText
                                 </p>
                                 
                             }
@@ -70,24 +83,24 @@
                         </td>
                     }
                     <td>
-                        @(item?.Product.Category?.CategoryName != null ? item.Product.Category.CategoryName : "No Category")
+                        @(item?.Stock != null ? item.Stock : "Out of Stock")
                     </td>
                     <td>
-                        @(item?.Product.Season?.SeasonName != null ? item.Product.Season.SeasonName : "No Category")
+                        @(item?.Product?.Category?.CategoryName != null ? item.Product.Category.CategoryName : "No Category")
                     </td>
                     <td>
-                        @(item?.Product.Brand?.BrandName != null ? item.Product.Brand.BrandName : "No Category")
+                        @(item?.Product?.Season?.SeasonName != null ? item.Product.Season.SeasonName : "No Category")
                     </td>
                     <td>
-                        @(item?.Product.Gender?.GenderName != null ? item.Product.Gender.GenderName : "No Gender")
+                        @(item?.Product?.Brand?.BrandName != null ? item.Product.Brand.BrandName : "No Category")
                     </td>
                     <td>
-
+                        @(item?.Product?.Gender?.GenderName != null ? item.Product.Gender.GenderName : "No Gender")
                     </td>
                     <td>
                         <a asp-action="Edit" asp-route-id="@item?.VariantId" class="btn btn-sm btn-primary">Edit</a>
                         <form asp-action="Delete" method="post" onsubmit="return confirm('Are you sure?')" style="display: inline-block;">
-                            <input type="hidden" name="id" value="@item?.ProductId">
+                            <input type="hidden" name="id" value="@item?.VariantId">
                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                         </form>
                     </td>

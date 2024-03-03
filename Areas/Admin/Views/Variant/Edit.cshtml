@@ -1,4 +1,4 @@
-@model Variant
+@model EditVariantViewModel
 
 
 <h2>Update Variant</h2>
@@ -6,12 +6,13 @@
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
 
     <div class="mb-3">
-        <input asp-for="ProductId" value="@Model.ProductId">
+        <input asp-for="ProductId" type="hidden" value="@Model.ProductId">
     </div>
-    
+
     <div class="mb-3">
-        <input asp-for="VariantId" value="@Model.VariantId">
+        <input asp-for="VariantId" type="hidden" value="@Model.VariantId">
     </div>
+
 
     <div id="variantContainer">
         <div class="variant-form">
@@ -23,6 +24,8 @@
                 <input asp-for="DiscountedPrice" class="form-control" />
                 <label asp-for="Stock">Stock:</label>
                 <input asp-for="Stock" class="form-control" />
+                <label>Pictures:</label>
+                <input asp-for="Pictures" type="file" class="form-control" multiple />
 
                 <div class="option-group">
                     @foreach (var option in ViewBag.Options)

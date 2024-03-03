@@ -134,10 +134,13 @@ namespace eCommerce.Data.Concrete
 
         public void DeleteProduct(Product product)
         {
+        
             if(product != null){
-                _context.Products.Remove(product);
-                _context.SaveChanges();
+            _context.Products.Remove(product);
+            _context.SaveChanges();
             }
+            
+            
         }
 
 

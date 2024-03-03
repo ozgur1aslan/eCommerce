@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eCommerce.Data.Concrete.EfCore;
 
@@ -10,9 +11,11 @@ using eCommerce.Data.Concrete.EfCore;
 namespace eCommerce.Migrations
 {
     [DbContext(typeof(eCommerceContext))]
-    partial class eCommerceContextModelSnapshot : ModelSnapshot
+    [Migration("20240303194638_test")]
+    partial class test
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.8");
@@ -283,7 +286,7 @@ namespace eCommerce.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("VariantId")
+                    b.Property<int>("VariantId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("CartItemId");
@@ -328,15 +331,17 @@ namespace eCommerce.Migrations
                     b.Property<string>("Text")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserId1")
                         .HasColumnType("TEXT");
 
                     b.HasKey("CommentId");
 
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId1");
 
                     b.ToTable("Comments");
                 });
@@ -596,7 +601,7 @@ namespace eCommerce.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("VariantId")
+                    b.Property<int>("VariantId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("WishlistItemId");
@@ -698,8 +703,10 @@ namespace eCommerce.Migrations
                         .IsRequired();
 
                     b.HasOne("eCommerce.Models.Variant", "Variant")
-                        .WithMany("CartItems")
-                        .HasForeignKey("VariantId");
+                        .WithMany()
+                        .HasForeignKey("VariantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
 
@@ -716,9 +723,7 @@ namespace eCommerce.Migrations
 
                     b.HasOne("eCommerce.Models.AppUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId1");
 
                     b.Navigation("Product");
 
@@ -818,8 +823,10 @@ namespace eCommerce.Migrations
                         .IsRequired();
 
                     b.HasOne("eCommerce.Models.Variant", "Variant")
-                        .WithMany("WishlistItems")
-                        .HasForeignKey("VariantId");
+                        .WithMany()
+                        .HasForeignKey("VariantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
 
@@ -865,13 +872,9 @@ namespace eCommerce.Migrations
 
             modelBuilder.Entity("eCommerce.Models.Variant", b =>
                 {
-                    b.Navigation("CartItems");
-
                     b.Navigation("Pictures");
 
                     b.Navigation("PurchasedItems");
-
-                    b.Navigation("WishlistItems");
                 });
 #pragma warning restore 612, 618
         }

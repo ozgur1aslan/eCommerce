@@ -52,6 +52,10 @@ namespace eCommerce.Models
 
             public List<Picture>? Pictures { get; set; } = new List<Picture>();
 
+
+            public List<WishlistItem>? WishlistItems { get; set; } = new List<WishlistItem>();
+            public List<CartItem>? CartItems { get; set; } = new List<CartItem>();
+            public List<PurchasedItem>? PurchasedItems { get; set; } = new List<PurchasedItem>();
             
         }
 

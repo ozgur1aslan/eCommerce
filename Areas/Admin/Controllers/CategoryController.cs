@@ -22,8 +22,6 @@ namespace eCommerce.Areas.Admin.Controllers
         }
 
 
-
-
         public async Task<IActionResult> List()
         {
 
@@ -32,6 +30,7 @@ namespace eCommerce.Areas.Admin.Controllers
 
             return View(await categories.ToListAsync());
         } 
+
 
         public IActionResult Create()
         {
@@ -84,17 +83,27 @@ namespace eCommerce.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id){
 
-            var categoryToDelete = await _categoryRepository.Categories.FirstOrDefaultAsync(c=> c.CategoryId == id);
+            try
+            {
+                var categoryToDelete = await _categoryRepository.Categories.FirstOrDefaultAsync(c=> c.CategoryId == id);
             
-            if(categoryToDelete == null){
-                return NotFound();
+                if(categoryToDelete == null){
+                    return NotFound();
+                }
+
+                _categoryRepository.DeleteCategory(categoryToDelete);
+                
+                return RedirectToAction("List");
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "You can't delete this category beacuse it's used in at least one product.");
+
+                var categories = await _categoryRepository.Categories.Include(c => c.Products).ToListAsync();
+                return View("List", categories);
             }
 
-            _categoryRepository.DeleteCategory(categoryToDelete);
-            
-            return RedirectToAction("List");
         }
-
 
     }
 }

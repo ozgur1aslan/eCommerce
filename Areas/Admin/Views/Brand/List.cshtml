@@ -1,5 +1,18 @@
 @model List<Brand>
 
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>Error:</strong>
+        <ul>
+            @foreach (var modelError in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@modelError.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+
 <div class="row">
     <div class="col-12">
         <h2>Category List</h2>
@@ -20,7 +33,7 @@
                         <td>@item.BrandName</td>
                         <td>
                             <p>@item.Products.Count()</p>
-                            <a asp-controller="Admin" asp-action="FilteredListBrand" asp-route-id="@item.BrandId" class="btn btn-sm btn-primary">See Them</a>
+                            <a asp-controller="Product" asp-action="FilterProducts" asp-route-brandId="@item.BrandId" class="btn btn-sm btn-primary">See Them</a>
                         </td>
                         <td>
                             <a asp-action="Edit" asp-route-id="@item.BrandId" class="btn btn-sm btn-primary">Edit</a>

@@ -35,11 +35,11 @@ namespace eCommerce.Models
     {
         public int PurchasedItemId { get; set; }
         public int OrderId { get; set; }
-        public int VariantId { get; set; }
+        public int? VariantId { get; set; }
         public int Quantity { get; set; }
 
         // Navigation properties
         public Order Order { get; set; }
-        public Variant Variant { get; set; }
+        public Variant? Variant { get; set; }
     }
 }

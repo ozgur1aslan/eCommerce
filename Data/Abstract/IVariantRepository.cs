@@ -1,3 +1,4 @@
+using eCommerce.Areas.Admin.ViewModels;
 using eCommerce.Models;
 
 namespace eCommerce.Data.Abstract
@@ -8,10 +9,11 @@ namespace eCommerce.Data.Abstract
         Task<Variant> GetVariantByIdAsync(int? id);
 
         void CreateVariant(Variant variant);
+        string ProcessAndSaveImage(IFormFile imageFile);
 
-        void UpdateVariant(Variant variant);
+        void UpdateVariant(EditVariantViewModel variant);
 
-        void UpdateVariant(Variant variant, int[] SelectedValues);
+        void UpdateVariant(EditVariantViewModel variant, int[] SelectedValues);
 
         void DeleteVariant(Variant variant);
 

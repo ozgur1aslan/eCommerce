@@ -7,7 +7,7 @@ namespace eCommerce.Data.Abstract
         IQueryable<CartItem> CartItems { get; }
         int GetCartItemCount(string userId);
         void AddToCart(CartItem CartItem);
-        void RemoveFromCart(int variantId, string userId);
+        void RemoveFromCart(int? variantId, string userId);
         void ToggleCartItem(int variantId, string userId);
     }
 }
