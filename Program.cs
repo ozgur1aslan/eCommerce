@@ -51,6 +51,7 @@ builder.Services.ConfigureApplicationCookie(options =>{
 
 builder.Services.AddScoped<IProductRepository, EfProductRepository>();
 builder.Services.AddScoped<IVariantRepository, EfVariantRepository>();
+builder.Services.AddScoped<ICommentRepository, EfCommentRepository>();
 builder.Services.AddScoped<ICategoryRepository, EfCategoryRepository>();
 builder.Services.AddScoped<ISeasonRepository, EfSeasonRepository>();
 builder.Services.AddScoped<IBrandRepository, EfBrandRepository>();

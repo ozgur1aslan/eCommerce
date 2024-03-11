@@ -110,3 +110,39 @@
 
     </script>
 }
+
+<div class="bg-white mt-3">
+<div class="card border-0">
+    <div class="card-header pb-0">
+        <h4><span id="commentCount">asd</span> adet yorum</h4>
+    </div>
+    <div class="card-body">
+        <div id="comments">
+            
+        </div>
+
+        @if(User.Identity!.IsAuthenticated)
+        {
+            <hr class="my-4">
+            <div>
+                <h4 class="mb-3">Yorum Ekle</h4>
+                <form action="/posts/AddComment" method="post">
+                    <input type="hidden" id="PostId" name="PostId" value="">
+                    <div class="mb-3">
+                        <label for="Text" class="form-label">Yorum</label>
+                        <textarea type="text" name="Text" id="Text" rows="3" class="form-control"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <button id="btnYorumKayit" type="submit" class="btn btn-primary">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        }
+        else
+        {
+            <p>Yorum için uygulamaya giriş yapmalısınız. <a href="/users/login">Login</a></p>
+        }
+        
+    </div>
+</div>
+</div>

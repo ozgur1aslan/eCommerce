@@ -6,6 +6,7 @@
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-6">
+            <!-- Upper Part: Product Details and Variants -->
             <div id="imageCarousel" class="carousel slide" data-ride="carousel">
                 <div class="carousel-inner">
                     @foreach (var picture in Model.Pictures)
@@ -57,9 +58,8 @@
                             Add to Cart
                         </button>
                     }
-                    
                 </div>
-                
+
                 <hr>
                 <p>Variants:</p>
 
@@ -95,62 +95,184 @@
                         }
                     }
                 </div>
-
-
-                <div class="row mt-4">
-    <h4>Variant Sizes</h4>
-    @if (ViewBag.VariantSizes != null && ViewBag.VariantSizes.Count > 0)
-    {
-        @foreach (var sizeVariant in ViewBag.VariantSizes)
-        {
-            <div class="col-md-3 mb-4">
-                <div class="card">
-                    <a href="@Url.Action("Product", "Home", new { variantId = sizeVariant.VariantId })">
-                        <div class="card-body">
-                            <h6 class="card-title">Size: @sizeVariant.Values[0].ValueText</h6>
-                            <!-- Add other details if needed -->
-
-                        </div>
-                    </a>
-                </div>
             </div>
-        }
-    }
-    else
-    {
-        <p>No variant sizes available.</p>
-    }
-</div>
 
+            <div class="row mt-4">
+                <h4>Variant Sizes</h4>
+                @if (ViewBag.VariantSizes != null && ViewBag.VariantSizes.Count > 0)
+                {
+                    @foreach (var sizeVariant in ViewBag.VariantSizes)
+                    {
+                        <div class="col-md-3 mb-4">
+                            <div class="card">
+                                <a href="@Url.Action("Product", "Home", new { variantId = sizeVariant.VariantId })">
+                                    <div class="card-body">
+                                        <h6 class="card-title">Size: @sizeVariant.Values[0].ValueText</h6>
+                                        <!-- Add other details if needed -->
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>No variant sizes available.</p>
+                }
+            </div>
 
+            <div class="mt-4">
+                <h4>Description</h4>
+                <p>@Model.Product.Description</p>
+            </div>
 
-
-
-
-
+            <div class="mt-4">
+                <h4>Tags</h4>
+                <ul class="list-inline">
+                    @foreach (var tag in Model.Product.Tags)
+                    {
+                        <li class="list-inline-item"><span class="badge bg-secondary" style="font-size: 15px;">@tag.Text</span></li>
+                    }
+                </ul>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="mt-4">
-        <h4>Description</h4>
-        <p>@Model.Product.Description</p>
-    </div>
+<!-- Lower Part: Comments and Additional Functionality -->
+<div class="bg-white mt-3">
+    <div class="card border-0">
+        <div class="card-header pb-0">
+            <h4><span id="commentCount">@Model.Product.Comments.Count()</span> Comments</h4>
+        </div>
+        <div class="card-body">
+            <div id="comments">
+                @foreach(var comment in Model.Product.Comments)
+                {
+                    <div class="my-4 comment-container">
+                        <div class="mb-2">
+                            @if (comment.User != null)
+                            {
+                                <h6>
+                                    <p>@comment.User.FullName</p>
+                                </h6>
+                            }
+                            <small>@comment.PublishedOn.ToString("G")</small>
+                        </div>
+                        <p>@comment.Text</p>
+                        <p class="star-rating">
+                            <script>
+                                function generateStarsHTML(rating) {
+                                    var starsHTML = '';
+                                    for (var i = 1; i <= 5; i++) {
+                                        if (i <= rating) {
+                                            starsHTML += '<span class="star">&#9733;</span>'; // Unicode star character
+                                        } else {
+                                            starsHTML += '<span class="star">&#9734;</span>'; // Unicode star outline character
+                                        }
+                                    }
+                                    document.write(starsHTML);
+                                }
 
-    <div class="mt-4">
-        <h4>Tags</h4>
-        <ul class="list-inline">
-            @foreach (var tag in Model.Product.Tags)
+                                generateStarsHTML(@comment.Rating);
+                            </script>
+                        </p>
+                        <hr class="my-2 comment-divider">
+                    </div>
+                }
+            </div>
+
+            @if(User.Identity!.IsAuthenticated)
             {
-                <li class="list-inline-item"><span class="badge bg-secondary" style="font-size: 15px;">@tag.Text</span></li>
+                <hr class="my-4">
+                <div>
+                    <h4 class="mb-3">Make a Comment</h4>
+                    <form action="/Home/AddComment" method="post">
+                        <input type="hidden" id="ProductId" name="ProductId" value="@Model.Product.ProductId">
+                        <div class="mb-3">
+                            <label for="Text" class="form-label">Comment</label>
+                            <textarea type="text" name="Text" id="Text" rows="3" class="form-control"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="rating">Your Rating:</label>
+                            <select class="form-control" id="Rating">
+                                <option value="1">1 star</option>
+                                <option value="2">2 stars</option>
+                                <option value="3">3 stars</option>
+                                <option value="4">4 stars</option>
+                                <option value="5">5 stars</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <button id="btnYorumKayit" type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
             }
-        </ul>
+            else
+            {
+                <p>For leaving a comment, you must log in to the application. <a href="/Auth/Login">Login</a></p>
+            }
+        </div>
     </div>
-
-    
 </div>
 
 @section scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#btnYorumKayit").click(function() {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("AddComment")',
+                    dataType: 'json',
+                    data: {
+                        ProductId: $('#ProductId').val(),
+                        FullName: $('#FullName').val(),
+                        Text: $('#Text').val(),
+                        Rating: $('#Rating').val(),
+                    },
+                    success: function(yorum) {
+                        console.log(yorum);
+                        var date = new Date(yorum.publishedOn);
+
+                        function generateStarsHTML(rating) {
+                            var starsHTML = '';
+                            for (var i = 1; i <= 5; i++) {
+                                if (i <= rating) {
+                                    starsHTML += '<span class="star">&#9733;</span>'; // Unicode star character
+                                } else {
+                                    starsHTML += '<span class="star">&#9734;</span>'; // Unicode star outline character
+                                }
+                            }
+                            return starsHTML;
+                        }
+
+                        $("#comments").append(`
+                            <div class="my-4">
+                                <div class="mb-2">
+                                    <h6>${yorum.fullname}</h6>
+                                    <small>${date.toLocaleDateString()}</small>
+                                </div>
+                                <p>${yorum.text}</p>
+                                <p class="star-rating">${generateStarsHTML(yorum.rating)}</p>
+                            </div>
+                        `);
+
+                        $("#FullName").val('');
+                        $("#Text").val('');
+                        $("#Rating").val('');
+
+                        var adet = parseInt($("#commentCount").text());
+                        $("#commentCount").text(adet + 1);
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+
+
     <script>
         async function toggleWishlist(variantId) {
             // Update the URL with the correct path including the area
@@ -206,7 +328,5 @@
 
 
         updateCartCount();
-
-
     </script>
 }
