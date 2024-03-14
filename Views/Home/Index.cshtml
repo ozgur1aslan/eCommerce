@@ -7,6 +7,10 @@
     <div class="row">
         @foreach(var item in Model)
         {
+            <!-- Calculate average rating -->
+            double averageRating = item.Product.Comments.Any() ? item.Product.Comments.Average(c => c.Rating) : 0;
+            
+
             <div class="col-md-3 mb-4">
                 <div class="card">
                     <a href="@Url.Action("Product", "Home", new { variantId = item.VariantId })">
@@ -27,6 +31,25 @@
                     </a>
                     <div class="card-footer">
                         @if (SignInManager.IsSignedIn(User)){
+
+                            <p class="star-rating">
+                                <script>
+                                    function generateStarsHTML(rating) {
+                                        var starsHTML = '';
+                                        for (var i = 1; i <= 5; i++) {
+                                            if (i <= rating) {
+                                                starsHTML += '<span class="star">&#9733;</span>'; // Unicode star character
+                                            } else {
+                                                starsHTML += '<span class="star">&#9734;</span>'; // Unicode star outline character
+                                            }
+                                        }
+                                        document.write(starsHTML);
+                                    }
+
+                                    generateStarsHTML(@averageRating);
+                                </script>
+                            </p>
+
                             <button class="btn btn-outline-danger btn-sm float-start" onclick="toggleWishlist(@item.VariantId)">
                                 <i id="wishlistIcon_@item.VariantId" class="heart-icon @if (WishlistService.IsInWishlist(item.VariantId)) { <text>fas text-danger</text> } else { <text>far text-danger</text> } fa-heart"></i>
                                 Wishlist

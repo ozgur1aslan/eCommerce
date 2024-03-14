@@ -139,11 +139,33 @@
     </div>
 </div>
 
+
+
 <!-- Lower Part: Comments and Additional Functionality -->
 <div class="bg-white mt-3">
     <div class="card border-0">
         <div class="card-header pb-0">
-            <h4><span id="commentCount">@Model.Product.Comments.Count()</span> Comments</h4>
+            <h4><span id="commentCount">@ViewBag.CommentCount</span> Comments</h4>
+            <!-- Display average rating -->
+            <p>Average Rating: @ViewBag.AverageRating</p>
+            <!-- Display stars -->
+            <p class="star-rating">
+                <script>
+                    function generateStarsHTML(rating) {
+                        var starsHTML = '';
+                        for (var i = 1; i <= 5; i++) {
+                            if (i <= rating) {
+                                starsHTML += '<span class="star">&#9733;</span>'; // Unicode star character
+                            } else {
+                                starsHTML += '<span class="star">&#9734;</span>'; // Unicode star outline character
+                            }
+                        }
+                        document.write(starsHTML);
+                    }
+
+                    generateStarsHTML(@ViewBag.AverageRating);
+                </script>
+            </p>
         </div>
         <div class="card-body">
             <div id="comments">
@@ -181,6 +203,8 @@
                     </div>
                 }
             </div>
+
+            <div id="errorMessage" class="text-danger"></div>
 
             @if(User.Identity!.IsAuthenticated)
             {
@@ -220,8 +244,8 @@
 @section scripts {
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script type="text/javascript">
-        $(document).ready(function() {
-            $("#btnYorumKayit").click(function() {
+        $(document).ready(function () {
+            $("#btnYorumKayit").click(function () {
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Action("AddComment")',
@@ -232,43 +256,66 @@
                         Text: $('#Text').val(),
                         Rating: $('#Rating').val(),
                     },
-                    success: function(yorum) {
-                        console.log(yorum);
-                        var date = new Date(yorum.publishedOn);
+                    success: function (response) {
+                        console.log(response);
 
-                        function generateStarsHTML(rating) {
-                            var starsHTML = '';
-                            for (var i = 1; i <= 5; i++) {
-                                if (i <= rating) {
-                                    starsHTML += '<span class="star">&#9733;</span>'; // Unicode star character
-                                } else {
-                                    starsHTML += '<span class="star">&#9734;</span>'; // Unicode star outline character
-                                }
-                            }
-                            return starsHTML;
+                        // Check for the presence of the "error" property
+                        if (response.error) {
+                            // Display the error message in the #errorMessage element
+                            $("#errorMessage").text(response.error);
+                        } else {
+                            // Clear any existing error message
+                            $("#errorMessage").text('');
+
+                            // Call the function to render the comment
+                            renderComment(response);
                         }
-
-                        $("#comments").append(`
-                            <div class="my-4">
-                                <div class="mb-2">
-                                    <h6>${yorum.fullname}</h6>
-                                    <small>${date.toLocaleDateString()}</small>
-                                </div>
-                                <p>${yorum.text}</p>
-                                <p class="star-rating">${generateStarsHTML(yorum.rating)}</p>
-                            </div>
-                        `);
-
-                        $("#FullName").val('');
-                        $("#Text").val('');
-                        $("#Rating").val('');
-
-                        var adet = parseInt($("#commentCount").text());
-                        $("#commentCount").text(adet + 1);
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle the AJAX error
+                        console.error(xhr.responseText);
+                        $("#errorMessage").text('An error occurred while processing your request.');
                     }
                 });
                 return false;
             });
+
+            // Function to render a comment
+            function renderComment(comment) {
+                // Use the 'publishedOn' property directly from the server response
+                var date = new Date(comment.publishedOn);
+
+                function generateStarsHTML(rating) {
+                    var starsHTML = '';
+                    for (var i = 1; i <= 5; i++) {
+                        if (i <= rating) {
+                            starsHTML += '<span class="star">&#9733;</span>'; // Unicode star character
+                        } else {
+                            starsHTML += '<span class="star">&#9734;</span>'; // Unicode star outline character
+                        }
+                    }
+                    return starsHTML;
+                }
+
+                $("#comments").append(`
+                    <div class="my-4">
+                        <div class="mb-2">
+                            <h6>${comment.fullname}</h6>
+                            <!-- Use 'comment.publishedOn' directly -->
+                            <small>${new Date(comment.publishedOn).toLocaleDateString()}</small>
+                        </div>
+                        <p>${comment.text}</p>
+                        <p class="star-rating">${generateStarsHTML(comment.rating)}</p>
+                    </div>
+                `);
+
+                $("#FullName").val('');
+                $("#Text").val('');
+                $("#Rating").val('');
+
+                var adet = parseInt($("#commentCount").text());
+                $("#commentCount").text(adet + 1);
+            }
         });
     </script>
 
