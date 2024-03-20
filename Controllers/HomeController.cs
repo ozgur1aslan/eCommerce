@@ -16,32 +16,48 @@ public class HomeController : Controller
     private readonly UserManager<AppUser> _userManager;
     private IProductRepository _productRepository;
     private IVariantRepository _variantRepository;
+
+    private ICategoryRepository _categoryRepository;
+    private ISeasonRepository _seasonRepository;
+    private IBrandRepository _brandRepository;
     private ICommentRepository _commentRepository;
     
     private readonly eCommerceContext _context;
 
 
-        public HomeController(UserManager<AppUser> userManager, eCommerceContext context, IProductRepository productRepository, IVariantRepository variantRepository, ICommentRepository commentRepository)
+        public HomeController(UserManager<AppUser> userManager, eCommerceContext context, IProductRepository productRepository, IVariantRepository variantRepository, ICategoryRepository categoryRepository, ISeasonRepository seasonRepository, IBrandRepository brandRepository, ICommentRepository commentRepository)
         {
             _productRepository = productRepository;
             _variantRepository = variantRepository;
+            _categoryRepository = categoryRepository;
+            _seasonRepository = seasonRepository;
+            _brandRepository = brandRepository;
             _commentRepository = commentRepository;
             _context = context;
 
             _userManager = userManager;
         }
 
-    public IActionResult Index()
+    public IActionResult Index(string gender, int? categoryId, int? seasonId, int? brandId, int? genderId)
     {
         //var products = _productRepository.Products.Include(c => c.Variants).ThenInclude(c => c.Pictures);
 
 
         var products = _productRepository.Products
+        .Include(p => p.Gender)
         .Include(p => p.Comments)
         .Include(p => p.Variants)
         .ThenInclude(v => v.Pictures)
         .Where(p => p.Variants.Any(v => v.Stock > 0)) // Filter out products with no stock
         .ToList();
+
+
+        if (!string.IsNullOrEmpty(gender))
+        {
+            products = products.Where(p => p.Gender != null && p.Gender.GenderName == gender).ToList();
+            
+        }
+
 
         // Select the product variants with the most stock and smallest variantId
         var selectedVariants = products
@@ -53,14 +69,79 @@ public class HomeController : Controller
             .Where(v => v != null)
             .ToList();
 
-        //if(!string.IsNullOrEmpty(tag))
-        //{
-        //    posts = posts.Where(x => x.Tags.Any(t => t.Url == tag));
-        //}
 
-        //return View( new ProductViewModel { Products = await products.ToListAsync() });
+        ViewBag.Categories = _categoryRepository.Categories.Include(c => c.Products).ToList();
+        ViewBag.Seasons = _seasonRepository.Seasons.Include(c => c.Products).ToList();
+        ViewBag.Brands = _brandRepository.Brands.Include(c => c.Products).ToList();
+        ViewBag.Genders = _context.Genders.Include(c => c.Products).ToList();
+
         return View(selectedVariants);
     }
+
+    public IActionResult FilteredIndex0(int? categoryId, int? seasonId, int? brandId, int? genderId)
+        {
+            var filteredProducts = _productRepository.Products
+                .Include(c => c.Category)
+                .Include(c => c.Season)
+                .Include(c => c.Brand)
+                .Include(c => c.Gender)
+                .Include(c => c.Variants)
+                .ThenInclude(c => c.Pictures)
+                .Where(p =>
+                    (!categoryId.HasValue || p.CategoryId == categoryId) &&
+                    (!seasonId.HasValue || p.SeasonId == seasonId) &&
+                    (!brandId.HasValue || p.BrandId == brandId) &&
+                    (!genderId.HasValue || p.GenderId == genderId) &&
+                     p.Variants.Any(v => v.Stock > 0))
+                .ToList();
+
+
+            var selectedVariants = filteredProducts
+                .Where(v => v.isActive == true).Select(p => p.Variants
+                .Where(v => v.Stock > 0)
+                .OrderByDescending(v => v.Stock)
+                .ThenBy(v => v.VariantId)
+                .FirstOrDefault())
+                .Where(v => v != null)
+                .ToList();
+
+            return View(selectedVariants);
+        }
+
+        public IActionResult Filter(List<int?> categoryIds, List<int?> seasonIds, List<int?> brandIds, List<int?> genderIds)
+        {
+            var filteredProducts = _productRepository.Products
+                .Include(c => c.Category)
+                .Include(c => c.Season)
+                .Include(c => c.Brand)
+                .Include(c => c.Gender)
+                .Include(c => c.Variants)
+                    .ThenInclude(c => c.Pictures)
+                .Where(p =>
+                    (categoryIds == null || !categoryIds.Any() || categoryIds.Contains(p.CategoryId)) &&
+                    (seasonIds == null || !seasonIds.Any() || seasonIds.Contains(p.SeasonId)) &&
+                    (brandIds == null || !brandIds.Any() || brandIds.Contains(p.BrandId)) &&
+                    (genderIds == null || !genderIds.Any() || genderIds.Contains(p.GenderId)))
+                .ToList();
+
+            var selectedVariants = filteredProducts
+                .Where(v => v.isActive == true).Select(p => p.Variants
+                .Where(v => v.Stock > 0)
+                .OrderByDescending(v => v.Stock)
+                .ThenBy(v => v.VariantId)
+                .FirstOrDefault())
+                .Where(v => v != null)
+                .ToList();
+
+            
+            ViewBag.Categories = _categoryRepository.Categories.Include(c => c.Products).ToList();
+            ViewBag.Seasons = _seasonRepository.Seasons.Include(c => c.Products).ToList();
+            ViewBag.Brands = _brandRepository.Brands.Include(c => c.Products).ToList();
+            ViewBag.Genders = _context.Genders.Include(c => c.Products).ToList();
+
+
+            return View("Index", selectedVariants);
+        }
 
 
 

@@ -40,14 +40,33 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index" asp-route-gender="Male">Men</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index" asp-route-gender="Female">Women</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index" asp-route-season="Fall">Fall</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index" asp-route-season="Winter">Winter</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index" asp-route-season="Spring">Spring</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index" asp-route-season="Summer">Summer</a>
+                        </li>
+
+
                         <li class="nav-item">
                             @if (User.IsInRole("Admin"))
                             {
                                 <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="Index">Admin</a>
                             }
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
                     <ul class="navbar-nav ml-auto">
@@ -71,17 +90,17 @@
                             if (user != null)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="User" asp-controller="Account" asp-action="Profile" asp-route-id="@user.Id">
-                                        Profile
-                                    </a>
-                                </li>
-                                <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="User" asp-controller="Account" asp-action="Orders" asp-route-id="@user.Id">
                                         Orders
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <span class="nav-link text-dark">Welcome, @user.FullName!</span>
+                                    <a class="nav-link text-dark" asp-area="User" asp-controller="Account" asp-action="Profile" asp-route-id="@user.Id">
+                                        Profile
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <span class="nav-link text-dark">@user.FullName</span>
                                 </li>
                                 <li class="nav-item">
                                     <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post">
