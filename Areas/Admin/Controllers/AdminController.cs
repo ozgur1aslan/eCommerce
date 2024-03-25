@@ -122,5 +122,65 @@ namespace eCommerce.Areas.Admin.Controllers
         }
 
 
+        public IActionResult Statistics()
+        {
+            return View();
+        }
+
+
+        public IActionResult MostPurchased()
+        {
+            var products = _productRepository.Products
+                .Include(c => c.Category)
+                .Include(c => c.Season)
+                .Include(c => c.Brand)
+                .Include(c => c.Gender)
+                .Include(c => c.Variants)
+                    .ThenInclude(v => v.PurchasedItems)
+                .Include(c => c.Variants)
+                    .ThenInclude(v => v.Pictures)
+                .ToList();
+
+            // Sort products based on total quantity of purchased items across all variants
+            products = products.OrderByDescending(p => p.Variants.Sum(v => v.PurchasedItems.Sum(pi => pi.Quantity))).ToList();
+
+
+            ViewBag.Categories = _categoryRepository.Categories.Include(c => c.Products).ToList();
+            ViewBag.Seasons = _seasonRepository.Seasons.Include(c => c.Products).ToList();
+            ViewBag.Brands = _brandRepository.Brands.Include(c => c.Products).ToList();
+            ViewBag.Genders = _context.Genders.Include(c => c.Products).ToList();
+
+            return View(products);
+        }
+
+        public IActionResult MostWishlisted()
+        {
+            var products = _productRepository.Products
+                .Include(c => c.Category)
+                .Include(c => c.Season)
+                .Include(c => c.Brand)
+                .Include(c => c.Gender)
+                .Include(c => c.Variants)
+                    .ThenInclude(v => v.WishlistItems)
+                .Include(c => c.Variants)
+                    .ThenInclude(v => v.Pictures)
+                .ToList();
+
+            // Sort products based on total quantity of purchased items across all variants
+            products = products.OrderByDescending(p => p.Variants.Sum(v => v.WishlistItems.Count)).ToList();
+
+
+            ViewBag.Categories = _categoryRepository.Categories.Include(c => c.Products).ToList();
+            ViewBag.Seasons = _seasonRepository.Seasons.Include(c => c.Products).ToList();
+            ViewBag.Brands = _brandRepository.Brands.Include(c => c.Products).ToList();
+            ViewBag.Genders = _context.Genders.Include(c => c.Products).ToList();
+
+            return View(products);
+        }
+
+
+        
+
+
     }
 }

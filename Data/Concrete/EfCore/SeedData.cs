@@ -9,7 +9,7 @@ namespace eCommerce.Data.Concrete.EfCore
 {
     public static class SeedData
     {
-        private const string adminUser = "ozgur@admin.com";
+        private const string adminUser = "user@admin.com";
         private const string adminPassword = "admin123";
 
         public static async void SeedNeededData(IApplicationBuilder app)
@@ -40,7 +40,7 @@ namespace eCommerce.Data.Concrete.EfCore
                 {
                     FullName = "Özgür Aslan",
                     UserName = adminUser,
-                    Email = "ozgur@admin.com",
+                    Email = "user@admin.com",
                     PhoneNumber = "44554455445"
                 };
 
@@ -145,32 +145,6 @@ namespace eCommerce.Data.Concrete.EfCore
                     new Category { CategoryName = "Tie"},
                     new Category { CategoryName = "Handbag"},
                     new Category { CategoryName = "Earring"},
-                    new Category { CategoryName = "Necklace"},
-                    new Category { CategoryName = "Knickers"},
-                    new Category { CategoryName = "Wedding Dress"},
-                    new Category { CategoryName = "Turtleneck sweater"},
-                    new Category { CategoryName = "Socks"},
-                    new Category { CategoryName = "Blazer"},
-                    new Category { CategoryName = "Trench Coat"},
-                    new Category { CategoryName = "Cargo Shorts"},
-                    new Category { CategoryName = "Tuxedos"},
-                    new Category { CategoryName = "Nightshirts"},
-                    new Category { CategoryName = "Athletic Shoes"},
-                    new Category { CategoryName = "Halter Top"},
-                    new Category { CategoryName = "Mini Skirt"},
-                    new Category { CategoryName = "Sandals"},
-                    new Category { CategoryName = "Belts"},
-                    new Category { CategoryName = "Hats"},
-                    new Category { CategoryName = "Pajamas"},
-                    new Category { CategoryName = "Yoga Pants"},
-                    new Category { CategoryName = "Sports Tops"},
-                    new Category { CategoryName = "Swimwear"},
-                    new Category { CategoryName = "Cap"},
-                    new Category { CategoryName = "Snowsuit"},
-                    new Category { CategoryName = "Trousers"},
-                    new Category { CategoryName = "Suit"},
-                    new Category { CategoryName = "Dress Shoes"},
-                    new Category { CategoryName = "Hard Hat"},
                     new Category { CategoryName = "Cycling Shorts"}
                 );
 
@@ -205,39 +179,12 @@ namespace eCommerce.Data.Concrete.EfCore
                     new Brand { BrandName = "Banana Republic"},
                     new Brand { BrandName = "Tag Heuer"},
                     new Brand { BrandName = "ESCADA"},
-                    new Brand { BrandName = "Breguet"},
-                    new Brand { BrandName = "New Look"},
-                    new Brand { BrandName = "Bogner"},
-                    new Brand { BrandName = "Patagonia"},
-                    new Brand { BrandName = "Elie Saab"},
-                    new Brand { BrandName = "Breguet"},
-                    new Brand { BrandName = "Vacheron Constantin"},
-                    new Brand { BrandName = "Fossil"},
-                    new Brand { BrandName = "Jaeger-Le Coultre"},
-                    new Brand { BrandName = "Elie Taharie"},
-                    new Brand { BrandName = "Valentino"},
-                    new Brand { BrandName = "Jimmy Choo"},
-                    new Brand { BrandName = "Cole Haan"},
-                    new Brand { BrandName = "Oakley"},
-                    new Brand { BrandName = "Aldo"},
-                    new Brand { BrandName = "G-star"},
-                    new Brand { BrandName = "Topshop"},
-                    new Brand { BrandName = "Lacoste"},
-                    new Brand { BrandName = "Tory Burch"},
-                    new Brand { BrandName = "Tommy Hilfiger"},
-                    new Brand { BrandName = "Tissot"},
-                    new Brand { BrandName = "TODs"},
-                    new Brand { BrandName = "Sisley"},
-                    new Brand { BrandName = "Longchamp"},
-                    new Brand { BrandName = "Longines"},
                     new Brand { BrandName = "GAP"}
 
                 );
 
                 context.SaveChanges();
             }
-
-
             
             
         }

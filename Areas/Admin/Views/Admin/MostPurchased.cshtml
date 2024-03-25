@@ -1,0 +1,124 @@
+@model IEnumerable<Product>
+
+@if (!ViewData.ModelState.IsValid)
+{
+<div class="alert alert-danger">
+<strong>Error:</strong>
+<ul>
+    @foreach (var modelError in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+    {
+        <li>@modelError.ErrorMessage</li>
+    }
+</ul>
+</div>
+}
+
+<div class="row">
+    <div class="col-12">
+        <h2>Most Purchased Products</h2>
+        
+        @if(Model != null && Model.Any()) {
+            <table class="table tabled-bordered mt-3">
+            <thead>
+                <tr>
+                    <th style="width: 200px;">Image</th>
+                    <th>Name</th>
+                    <th>Times Purchased</th>
+                    <th>Variants</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                    <th>Season</th>
+                    <th>Brand</th>
+                    <th>Gender</th>
+                    <th style="width: 125px;">Options</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+            
+                @foreach(var item in Model)
+                {
+                <tr>
+                    <td>
+                        @if(item.Variants.Any())
+                        {
+                            @if (item?.Variants?.FirstOrDefault().Pictures != null && item.Variants.FirstOrDefault().Pictures.Any())
+                            {
+                                <img src="/@item.Variants.FirstOrDefault().Pictures.First().Path" class="img-fluid" alt="">
+                            }
+                            else
+                            {
+                                <p>No Image</p>
+                            }
+                        }
+                        else
+                        {
+                            <p>No Image</p>
+                        }
+                    </td>
+                    <td>@item.ProductName</td>
+                    <td>
+                        @if(item.Variants.Any())
+                        {
+                            // Calculate total purchased quantity for all variants of the product
+                            var totalPurchasedQuantity = item.Variants.Sum(v => v.PurchasedItems.Sum(pi => pi.Quantity));
+                            @totalPurchasedQuantity
+                        }
+                        else
+                        {
+                            <p>No variants</p>
+                        }
+                    </td>
+                    <td>
+                        <p>@item?.Variants?.Count()</p>
+                        @if(item?.Variants?.Count() > 0) {
+                            <a asp-controller="Variant" asp-action="List" asp-route-id="@item?.ProductId" class="btn btn-sm btn-primary">See Them</a>
+                        }
+                    </td>
+                    <td>
+                        @{
+                            var Prices = item.Variants?.Where(v => v.Price != null)?.Select(v => v.Price);
+
+                            if (Prices != null && Prices.Any())
+                            {
+                                var maxPrice = Prices.Max();
+                                var minPrice = Prices.Min();
+                                var averagePrice = Prices.Average();
+
+                                <p>Max priced variant: @maxPrice TL</p>
+                                <p>Min priced variant: @minPrice TL</p>
+                                <p>Average price of variants: @averagePrice.ToString("F2") TL</p>
+                            }
+                        }
+                    </td>
+                    
+                    <td>
+                        @(item?.Category?.CategoryName != null ? item.Category.CategoryName : "No Category")
+                    </td>
+                    <td>
+                        @(item?.Season?.SeasonName != null ? item.Season.SeasonName : "No Category")
+                    </td>
+                    <td>
+                        @(item?.Brand?.BrandName != null ? item.Brand.BrandName : "No Category")
+                    </td>
+                    <td>
+                        @(item?.Gender?.GenderName != null ? item.Gender.GenderName : "No Gender")
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item?.ProductId" class="btn btn-sm btn-primary">Edit</a>
+                        <form asp-action="Delete" method="post" onsubmit="return confirm('Are you sure?')" style="display: inline-block;">
+                            <input type="hidden" name="id" value="@item?.ProductId">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                }
+            </tbody>
+            </table>
+        } else {
+            <p>No Product</p>
+        }
+        
+    </div>
+</div>
+
